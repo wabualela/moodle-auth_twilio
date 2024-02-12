@@ -42,5 +42,24 @@ class auth_plugin_twilio extends auth_plugin_base {
      */
     public function __construct() {
         $this->authtype = 'twilio';
+        $this->config = get_config('twilio');
+    }
+
+    /**
+     * Return a list of identity providers to display on the login page.
+     *
+     * @param string|moodle_url $wantsurl The requested URL.
+     * @return array List of arrays with keys url, iconurl and name.
+     */
+    public function loginpage_idp_list($wantsurl) {
+        $result = [];
+        if (empty($wantsurl)) {
+            $wantsurl = '/';
+        }
+        $params   = [ 'id' => 1, 'wantsurl' => $wantsurl, 'sesskey' => sesskey()];
+        $icon     = '';
+        $url      = new moodle_url('/auth/oauth2/login.php', $params);
+        $result[] = [ 'url' => $url, 'iconurl' => $icon, 'name' => 'Twilio' ];
+        return $result;
     }
 }
