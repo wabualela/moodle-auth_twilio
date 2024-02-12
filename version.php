@@ -27,5 +27,5 @@ defined('MOODLE_INTERNAL') || die();
 $plugin->component    = 'auth_twilio';
 $plugin->release      = '1.0';
 $plugin->version      = 2024021100;
-$plugin->requires     = 2023100903.00;
-$plugin->maturity     = MATURITY_STABLE;
+$plugin->requires     = 2023100400;
+$plugin->maturity     = MATURITY_ALPHA;
