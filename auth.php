@@ -57,9 +57,9 @@ class auth_plugin_twilio extends auth_plugin_base {
             $wantsurl = '/';
         }
         $params   = [ 'id' => 1, 'wantsurl' => $wantsurl, 'sesskey' => sesskey()];
-        $icon     = '';
-        $url      = new moodle_url('/auth/oauth2/login.php', $params);
-        $result[] = [ 'url' => $url, 'iconurl' => $icon, 'name' => 'Twilio' ];
+        $icon     = 'https://banner2.kisspng.com/20180330/qzw/kisspng-whatsapp-logo-computer-icons-messenger-5abe20d1e68177.1133491015224096819442.jpg';
+        $url      = new moodle_url('/auth/twilio/login.php', $params);
+        $result[] = [ 'url' => $url, 'iconurl' => $icon, 'name' => 'WhatsApp' ];
         return $result;
     }
 }

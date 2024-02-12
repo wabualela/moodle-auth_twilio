@@ -23,6 +23,7 @@
  */
 
 require('../../config.php');
+require(__DIR__ . '/vendor/autoload.php');
 
 require_login();
 
@@ -32,4 +33,15 @@ $PAGE->set_context(context_system::instance());
 
 $PAGE->set_heading($SITE->fullname);
 echo $OUTPUT->header();
+
+$sid    = "ACb9c458a9428b1ce16603521ea811af62";
+$token  = "be64f692ed1f906386b81397c6e84587";
+$twilio = new Twilio\Rest\Client($sid, $token);
+
+// $verification = $twilio->verify->v2->services("VA1abf832cfc8f432e8b1f4ae113885dc6")
+//     ->verifications
+//     ->create("+256781547101", "whatsapp");
+
+// print($verification->status);
+
 echo $OUTPUT->footer();
