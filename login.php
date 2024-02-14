@@ -23,53 +23,59 @@
  */
 
 require('../../config.php');
-require_once("./vendor/autoload.php");
+require_once('classes/vendor/autoload.php');
 
-$url = new moodle_url('/auth/twilio/login.php', []);
-$PAGE->set_url($url);
+$tel  = optional_param('tel', '', PARAM_RAW);
+$code = optional_param('code', '', PARAM_RAW);
+$to   = optional_param('to', '', PARAM_RAW);
+
+$PAGE->set_url(new moodle_url('/auth/twilio/login.php', []));
 $PAGE->set_pagelayout('login');
 $PAGE->set_context(context_system::instance());
-
-
 $PAGE->set_heading($SITE->fullname);
+
+require_sesskey();
+
+if (!\auth_twilio\api::is_enabled()) {
+    throw new \moodle_exception('notenabled', 'auth_twilio');
+}
+
+$sid     = "ACb9c458a9428b1ce16603521ea811af62";
+$token   = "05d3420ecc0d88a0ffa2d69ee3bb0147";
+$service = "VA1abf832cfc8f432e8b1f4ae113885dc6";
+$twilio  = new Twilio\Rest\Client($sid, $token);
+
 echo $OUTPUT->header();
+echo $OUTPUT->heading(get_string('login'));
 
-$sid           = "ACb9c458a9428b1ce16603521ea811af62";
-$token         = "be64f692ed1f906386b81397c6e84587";
-$dalailservice = "VA1abf832cfc8f432e8b1f4ae113885dc6";
-$twilio        = new Twilio\Rest\Client($sid, $token);
+if ($tel && confirm_sesskey()) {
 
-if (optional_param('tel', '', PARAM_RAW) && confirm_sesskey()) {
-    $tel = optional_param('tel', '', PARAM_RAW);
-
-    $verification = $twilio->verify->v2->services("VA1abf832cfc8f432e8b1f4ae113885dc6")
+    $verification = $twilio->verify
+        ->v2
+        ->services($service)
         ->verifications
-        ->create($tel, "whatsapp");
+        ->create("+256781547101", "whatsapp");
 
     print("Status: " . $verification->status);
 
     echo html_writer::start_tag('form', [ 'action' => $PAGE->url, 'method' => 'post' ]);
-    echo html_writer::tag('input', '', [ 'placeholder' => 'Enter your OTP code', 'name' => 'otp' ]);
+    echo html_writer::tag('input', '', [ 'placeholder' => 'Enter your OTP code', 'name' => 'code' ]);
     echo html_writer::tag('input', '', [ 'value' => $tel, 'name' => 'to', 'type' => "hidden" ]);
     echo html_writer::tag('input', '', [ 'value' => sesskey(), 'name' => 'sesskey', 'type' => "hidden" ]);
     echo html_writer::tag('button', 'Check', []);
     echo html_writer::end_tag('form');
 
-} else if (optional_param('otp', '', PARAM_RAW) && optional_param('to', '', PARAM_RAW) && confirm_sesskey()) {
-    $tel = optional_param('to', '', PARAM_RAW);
-    $otp = optional_param('otp', '', PARAM_RAW);
-
-    $verification_check = $twilio->verify->v2->services($dalailservice)
+} else if ($code && $to && confirm_sesskey()) {
+    $verification_check = $twilio
+        ->verify
+        ->v2
+        ->services($service)
         ->verificationChecks
-        ->create(
-            [
-                "to"   => $tel,
-                "code" => $otp,
-            ],
-        );
+        ->create([ 'code' => $code, 'to' => $to ]);
+    if ($verification_check->status == 'approved') {
 
-    var_dump($verification_check);
-    die();
+
+    }
 } else {
 
     echo html_writer::start_tag('form', [ 'action' => $PAGE->url, 'method' => 'post' ]);

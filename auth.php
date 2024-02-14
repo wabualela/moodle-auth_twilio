@@ -14,16 +14,6 @@
 // You should have received a copy of the GNU General Public License
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
-/**
- * Main class for the Twilio authentication plugin
- *
- * Documentation: {@link https://docs.moodle.org/dev/Authentication_plugins}
- *
- * @package    auth_twilio
- * @copyright  2024 Wail Abualela <wailabualela@email.com>
- * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
- */
-
 defined('MOODLE_INTERNAL') || die();
 
 require_once($CFG->libdir . '/authlib.php');
@@ -42,24 +32,33 @@ class auth_plugin_twilio extends auth_plugin_base {
      */
     public function __construct() {
         $this->authtype = 'twilio';
-        $this->config = get_config('twilio');
+        $this->config   = get_config('twilio');
     }
 
     /**
      * Return a list of identity providers to display on the login page.
      *
-     * @param string|moodle_url $wantsurl The requested URL.
+     * @param string|
+     *  $wantsurl The requested URL.
      * @return array List of arrays with keys url, iconurl and name.
      */
     public function loginpage_idp_list($wantsurl) {
-        $result = [];
-        if (empty($wantsurl)) {
-            $wantsurl = '/';
-        }
-        $params   = [ 'id' => 1, 'wantsurl' => $wantsurl, 'sesskey' => sesskey()];
-        $icon     = 'https://banner2.kisspng.com/20180330/qzw/kisspng-whatsapp-logo-computer-icons-messenger-5abe20d1e68177.1133491015224096819442.jpg';
-        $url      = new moodle_url('/auth/twilio/login.php', $params);
-        $result[] = [ 'url' => $url, 'iconurl' => $icon, 'name' => 'WhatsApp' ];
+        $result   = [];
+        $result[] = [
+            'url'     => new moodle_url('/auth/twilio/login.php', [ 'wantsurl' => $wantsurl, 'sesskey' => sesskey()]),
+            'iconurl' => 'https://th.bing.com/th/id/OIP.Nf-m41NGgoClnltGcriroAHaHl?rs=1&pid=ImgDetMain',
+            'name'    => 'WhatsApp',
+        ];
         return $result;
+
+    }
+
+    /**
+     * Complete the login process after tel verifications is complete.
+     * @param string $tel
+     * @return void Either redirects or throws an exception
+     */
+    public function complete_login($tel): void {
+        global $CFG, $SESSION, $PAGE;
     }
 }

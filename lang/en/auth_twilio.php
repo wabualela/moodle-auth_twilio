@@ -26,3 +26,5 @@
 defined('MOODLE_INTERNAL') || die();
 
 $string['pluginname'] = 'Twilio';
+$string['notenabled'] = 'Sorry, Twilio (WhatsApp) authentication plugin is not enabled';
+

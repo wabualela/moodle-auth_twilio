@@ -36,7 +36,7 @@ echo $OUTPUT->header();
 
 $sid    = "ACb9c458a9428b1ce16603521ea811af62";
 $token  = "be64f692ed1f906386b81397c6e84587";
-$twilio = new Twilio\Rest\Client($sid, $token);
+$twilio = new  Clinet ($sid, $token);
 
 // $verification = $twilio->verify->v2->services("VA1abf832cfc8f432e8b1f4ae113885dc6")
 //     ->verifications
