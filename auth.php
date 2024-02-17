@@ -58,7 +58,10 @@ class auth_plugin_twilio extends auth_plugin_base {
      * @param string $tel
      * @return void Either redirects or throws an exception
      */
-    public function complete_login($tel): void {
-        global $CFG, $SESSION, $PAGE;
+    public static function complete_login($tel): void {
+        $user         = new stdClass();
+        $user->phone1 = $tel;
+        complete_user_login($user);
+        redirect(new moodle_url('/'));
     }
 }
