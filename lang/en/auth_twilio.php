@@ -25,6 +25,15 @@
 
 defined('MOODLE_INTERNAL') || die();
 
-$string['pluginname'] = 'Twilio';
+$string['pluginname'] = 'Twilio WhatsApp authentication';
 $string['notenabled'] = 'Sorry, Twilio (WhatsApp) authentication plugin is not enabled';
+
+// Settings page
+$string['auth_emaildescription']      = '<p>Twilio\'s WhatsApp-based self-registration feature empowers users to effortlessly establish their own accounts through a simple \'Create New Account\' button located on the login page. Upon initiating the process, users promptly receive a WhatsApp message containing a unique code, enabling them to swiftly verify and activate their account. Subsequent login attempts are seamlessly managed by cross-referencing the provided phone number and verification code with the stored data in the Moodle database.</p>';
+$string['auth_accountsid']            = 'Account SID';
+$string['auth_accountsiddescription'] = 'Twilio Account SID';
+$string['auth_token']                 = 'Auth Token';
+$string['auth_tokendescription']      = 'Twilio Account Authentication Token';
+$string['auth_servicesid']            = 'Service SID';
+$string['auth_servicesiddescription'] = 'Twilio Account Service SID';
 

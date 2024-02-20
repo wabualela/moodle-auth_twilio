@@ -14,10 +14,52 @@
 // You should have received a copy of the GNU General Public License
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
+defined('MOODLE_INTERNAL') || die;
+
 /**
- * TODO describe file settings
+ * Twilio authentication plugin settings
  *
  * @package    auth_twilio
  * @copyright  2024 Wail Abualela <wailabualela@email.com>
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
+
+if ($ADMIN->fulltree) {
+
+    // Introductory explanation.
+    $settings->add(
+        new admin_setting_heading(
+            'auth_twilio/pluginname',
+            '',
+            new lang_string('auth_emaildescription', 'auth_twilio'),
+        ),
+    );
+
+    $settings->add(
+        new admin_setting_configtext(
+            'auth_twilio/accountsid',
+            new lang_string('auth_accountsid', 'auth_twilio'),
+            new lang_string('auth_accountsiddescription', 'auth_twilio'),
+            '',
+        ),
+    );
+
+    $settings->add(
+        new admin_setting_configpasswordunmask(
+            'auth_twilio/token',
+            new lang_string('auth_token', 'auth_twilio'),
+            new lang_string('auth_tokendescription', 'auth_twilio'),
+            '',
+        ),
+    );
+
+    $settings->add(
+        new admin_setting_configtext(
+            'auth_twilio/servicesid',
+            new lang_string('auth_servicesid', 'auth_twilio'),
+            new lang_string('auth_servicesiddescription', 'auth_twilio'),
+            '',
+        ),
+    );
+
+}

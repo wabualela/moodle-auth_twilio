@@ -45,10 +45,15 @@ if (!\auth_twilio\api::is_enabled()) {
     throw new \moodle_exception('notenabled', 'auth_twilio');
 }
 
-$sid     = "AC660beb04105e094b1da6c41b1529b36b";
-$token   = "466db485c9d261b5dd61bf77b4ed090b";
-$service = "VA5b73cbb4931de800cef6f52afa72d905";
-$twilio  = new Twilio\Rest\Client($sid, $token);
+try {
+    $sid     = get_config('auth_twilio', 'accountsid');
+    $token   = get_config('auth_twilio', 'token');
+    $service = get_config('auth_twilio', 'servicesid');
+    $twilio  = new Twilio\Rest\Client($sid, $token);
+
+} catch (Exception $exception) {
+    echo html_writer::tag('span', $exception->getMessage(), [ 'class' => 'alert alert-danger' ]);
+}
 
 echo $OUTPUT->header();
 echo $OUTPUT->heading("WhatsApp");
@@ -80,7 +85,8 @@ if ($tel && confirm_sesskey()) {
             echo html_writer::end_tag('form');
         }
     } catch (Exception $e) {
-        redirect(new moodle_url('/login/index.php'), $e->getMessage(), 1000, 'error');
+        echo html_writer::tag('span', $e->getMessage(), [ 'class' => 'alert alert-danger' ]);
+        // redirect(new moodle_url('/login/index.php'), $e->getMessage(), 1000, 'error');
     }
 
 } else if ($code && $to && confirm_sesskey()) {
