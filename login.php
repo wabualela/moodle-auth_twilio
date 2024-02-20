@@ -29,14 +29,15 @@ require_once('classes/vendor/autoload.php');
 $tel  = optional_param('tel', '', PARAM_RAW);
 $code = optional_param('code', '', PARAM_RAW);
 $to   = optional_param('to', '', PARAM_RAW);
-
+// die(
+//     print_r($code, true)
+// );
 $firstname = optional_param('firstname', '', PARAM_RAW);
 $lastname  = optional_param('lastname', '', PARAM_RAW);
 
 $PAGE->set_url(new moodle_url('/auth/twilio/login.php', []));
 $PAGE->set_pagelayout('login');
 $PAGE->set_context(context_system::instance());
-$PAGE->set_heading($SITE->fullname);
 
 require_sesskey();
 
@@ -45,12 +46,12 @@ if (!\auth_twilio\api::is_enabled()) {
 }
 
 $sid     = "AC08e69af0691e2b327dd0702cbf710c77";
-$token   = "afe331077bc86d40438859289bddfabe";
+$token   = "67cb181f7b6b744bf105f602c24b3663";
 $service = "VA4f009bac65c1fd1f586061341e77553f";
 $twilio  = new Twilio\Rest\Client($sid, $token);
 
 echo $OUTPUT->header();
-echo $OUTPUT->heading(get_string('login'));
+echo $OUTPUT->heading("WhatsApp");
 
 if ($tel && confirm_sesskey()) {
 
@@ -59,24 +60,25 @@ if ($tel && confirm_sesskey()) {
             ->v2
             ->services($service)
             ->verifications
-            ->create("+256781547101", "whatsapp");
+            ->create($tel, "whatsapp");
 
-        print("Status: " . $verification->status);
+        if ($verification->status == 'pending') {
+            echo html_writer::start_tag('form', [ 'action' => $PAGE->url, 'method' => 'post' ]);
+            if (!$exist = $DB->record_exists('user', [ 'phone1' => $tel, 'confirmed' => true, 'deleted' => false ])) {
+                echo html_writer::tag('input', '', [ 'placeholder' => get_string('firstname'), 'name' => 'firstname', 'autocomplete' => 'firstname' ]);
+                echo html_writer::tag('input', '', [ 'placeholder' => get_string('lastname'), 'name' => 'lastname', 'autocomplete' => 'lastname' ]);
+            }
+
+
+            echo html_writer::tag('input', '', [ 'placeholder' => 'Enter your OTP code', 'name' => 'code' ]);
+            echo html_writer::tag('input', '', [ 'value' => $tel, 'name' => 'to', 'type' => "hidden" ]);
+            echo html_writer::tag('input', '', [ 'value' => sesskey(), 'name' => 'sesskey', 'type' => "hidden" ]);
+            echo html_writer::tag('button', 'Check', []);
+            echo html_writer::end_tag('form');
+        }
     } catch (Exception $e) {
-        echo $OUTPUT->notification($e->getMessage(), 'error');
-
+        redirect(new moodle_url('/login/index.php'), $e->getMessage(), 1000, 'error');
     }
-
-    echo html_writer::start_tag('form', [ 'action' => $PAGE->url, 'method' => 'post' ]);
-    if (!$exist = $DB->record_exists('user', [ 'phone1' => $tel, 'confirmed' => true, 'deleted' => false ])) {
-        echo html_writer::tag('input', '', [ 'placeholder' => get_string('firstname'), 'name' => 'firstname', 'autocomplete' => 'firstname' ]);
-        echo html_writer::tag('input', '', [ 'placeholder' => get_string('lastname'), 'name' => 'lastname', 'autocomplete' => 'lastname' ]);
-    }
-    echo html_writer::tag('input', '', [ 'placeholder' => 'Enter your OTP code', 'name' => 'code' ]);
-    echo html_writer::tag('input', '', [ 'value' => $tel, 'name' => 'to', 'type' => "hidden" ]);
-    echo html_writer::tag('input', '', [ 'value' => sesskey(), 'name' => 'sesskey', 'type' => "hidden" ]);
-    echo html_writer::tag('button', 'Check', []);
-    echo html_writer::end_tag('form');
 
 } else if ($code && $to && confirm_sesskey()) {
     try {
@@ -118,11 +120,63 @@ if ($tel && confirm_sesskey()) {
     }
 } else {
 
+    // echo html_writer::start_tag('form', [ 'action' => $PAGE->url, 'method' => 'post' ]);
+    // echo html_writer::tag('input', '', [ 'placeholder' => 'Enter your phone number', 'name' => 'tel', 'autocomplete' => 'tel', 'class' => 'form-control', 'required' => true, 'autofocus' => true ]);
+    // echo html_writer::tag('input', '', [ 'value' => sesskey(), 'name' => 'sesskey', 'type' => "hidden" ]);
+    // echo html_writer::tag('button', 'Send', [ 'class' => 'btn btn-success mt-2' ]);
+    // echo html_writer::end_tag('form');
+
+    /*
+    <div class="container height-100 d-flex justify-content-center align-items-center">
+     <div class="position-relative">
+     <div class="card p-2 text-center">
+     <h6>Please enter the one time password <br> to verify your account</h6>
+     <div>
+        <span>A code has been sent to</span>
+        <small>*******9897</small>
+     </div>
+     <div id="otp" class="inputs d-flex flex-row justify-content-center mt-2"> <input class="m-2 text-center form-control rounded" type="text" id="first" maxlength="1" /> <input class="m-2 text-center form-control rounded" type="text" id="second" maxlength="1" /> <input class="m-2 text-center form-control rounded" type="text" id="third" maxlength="1" /> <input class="m-2 text-center form-control rounded" type="text" id="fourth" maxlength="1" /> <input class="m-2 text-center form-control rounded" type="text" id="fifth" maxlength="1" /> <input class="m-2 text-center form-control rounded" type="text" id="sixth" maxlength="1" /> </div> <div class="mt-4"> <button class="btn btn-danger px-4 validate">Validate</button> </div> </div> <div class="card-2"> <div class="content d-flex justify-content-center align-items-center"> <span>Didn't get the code</span> <a href="#" class="text-decoration-none ms-3">Resend(1/3)</a> </div> </div> </div>
+</div> */
+
+    echo html_writer::tag('hr', '');
     echo html_writer::start_tag('form', [ 'action' => $PAGE->url, 'method' => 'post' ]);
-    echo html_writer::tag('input', '', [ 'value' => '+256781547101', 'name' => 'tel', 'autocomplete' => 'tel' ]);
+    // if (!$exist = $DB->record_exists('user', [ 'phone1' => $tel, 'confirmed' => true, 'deleted' => false ])) {
+
+    echo html_writer::start_div('d-flex');
+    echo html_writer::tag('input', '', [ 'placeholder' => get_string('firstname'), 'name' => 'firstname', 'autocomplete' => 'firstname', 'class' => 'form-control rounded m-2' ]);
+    echo html_writer::tag('input', '', [ 'placeholder' => get_string('lastname'), 'name' => 'lastname', 'autocomplete' => 'lastname', 'class' => 'form-control rounded m-2' ]);
+    echo html_writer::end_div();
+
+    // }
+
+    echo html_writer::tag('style', '.inputs input {
+        width: 40px;
+        height: 40px
+    }
+    
+    input[type=number]::-webkit-inner-spin-button,
+    input[type=number]::-webkit-outer-spin-button {
+        -webkit-appearance: none;
+        -moz-appearance: none;
+        appearance: none;
+        margin: 0
+    }');
+    echo html_writer::start_div('d-flex flex-row justify-content-center my-2 inputs');
+    echo html_writer::tag('input', '', [ 'name' => 'code[]', 'class' => 'm-2 text-center form-control rounded' ]);
+    echo html_writer::tag('input', '', [ 'name' => 'code[]', 'class' => 'm-2 text-center form-control rounded' ]);
+    echo html_writer::tag('input', '', [ 'name' => 'code[]', 'class' => 'm-2 text-center form-control rounded' ]);
+    echo html_writer::tag('input', '', [ 'name' => 'code[]', 'class' => 'm-2 text-center form-control rounded' ]);
+    echo html_writer::tag('input', '', [ 'name' => 'code[]', 'class' => 'm-2 text-center form-control rounded' ]);
+    echo html_writer::tag('input', '', [ 'name' => 'code[]', 'class' => 'm-2 text-center form-control rounded' ]);
+    echo html_writer::tag('input', '', [ 'name' => 'code[]', 'class' => 'm-2 text-center form-control rounded' ]);
+    echo html_writer::tag('input', '', [ 'name' => 'code[]', 'class' => 'm-2 text-center form-control rounded' ]);
+    echo html_writer::end_div();
+
+    echo html_writer::tag('input', '', [ 'value' => $tel, 'name' => 'to', 'type' => "hidden" ]);
     echo html_writer::tag('input', '', [ 'value' => sesskey(), 'name' => 'sesskey', 'type' => "hidden" ]);
-    echo html_writer::tag('button', 'Send', []);
+    echo html_writer::tag('button', 'Validate', [ 'class' => 'btn btn-primary' ]);
     echo html_writer::end_tag('form');
+
 }
 
 echo $OUTPUT->footer();
