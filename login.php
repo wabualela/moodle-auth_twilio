@@ -26,12 +26,9 @@ require('../../config.php');
 require_once($CFG->libdir . '/authlib.php');
 require_once('classes/vendor/autoload.php');
 
-$tel  = optional_param('tel', '', PARAM_RAW);
-$code = optional_param('code', '', PARAM_RAW);
-$to   = optional_param('to', '', PARAM_RAW);
-// die(
-//     print_r($code, true)
-// );
+$tel       = optional_param('tel', '', PARAM_RAW);
+$code      = optional_param('code', '', PARAM_RAW);
+$to        = optional_param('to', '', PARAM_RAW);
 $firstname = optional_param('firstname', '', PARAM_RAW);
 $lastname  = optional_param('lastname', '', PARAM_RAW);
 
@@ -131,64 +128,52 @@ if ($tel && confirm_sesskey()) {
         redirect(new moodle_url('/login/index.php'), 'Verification code not correct.', 0, 'error');
     }
 } else {
-
+    echo html_writer::start_div('container');
     echo html_writer::start_tag('form', [ 'action' => $PAGE->url, 'method' => 'post' ]);
-    echo html_writer::tag('input', '', [ 'placeholder' => 'Enter your phone number', 'name' => 'tel', 'autocomplete' => 'tel', 'class' => 'form-control', 'required' => true, 'autofocus' => true ]);
-    echo html_writer::tag('input', '', [ 'value' => sesskey(), 'name' => 'sesskey', 'type' => "hidden" ]);
-    echo html_writer::tag('button', 'Send', [ 'class' => 'btn btn-success mt-2' ]);
+    echo html_writer::tag('input', '', [
+        'id'           => 'tel',
+        'name'         => 'tel',
+        'class'        => 'form-control',
+        'placeholder'  => 'Enter your phone number',
+        'autocomplete' => 'tel',
+        'required'     => true,
+        'autofocus'    => true,
+    ]);
+    echo html_writer::tag('input', '', [
+        'type'  => 'submit',
+        'value' => get_string('verify', 'auth_twilio'),
+        'class' => 'btn btn-success mx-2',
+        'role'  => 'button',
+    ]);
+    echo html_writer::tag('input', '', [
+        'name'  => 'sesskey',
+        'value' => sesskey(),
+        'type'  => "hidden",
+    ]);
     echo html_writer::end_tag('form');
-
-    /*
-    <div class="container height-100 d-flex justify-content-center align-items-center">
-     <div class="position-relative">
-     <div class="card p-2 text-center">
-     <h6>Please enter the one time password <br> to verify your account</h6>
-     <div>
-        <span>A code has been sent to</span>
-        <small>*******9897</small>
-     </div>
-     <div id="otp" class="inputs d-flex flex-row justify-content-center mt-2"> <input class="m-2 text-center form-control rounded" type="text" id="first" maxlength="1" /> <input class="m-2 text-center form-control rounded" type="text" id="second" maxlength="1" /> <input class="m-2 text-center form-control rounded" type="text" id="third" maxlength="1" /> <input class="m-2 text-center form-control rounded" type="text" id="fourth" maxlength="1" /> <input class="m-2 text-center form-control rounded" type="text" id="fifth" maxlength="1" /> <input class="m-2 text-center form-control rounded" type="text" id="sixth" maxlength="1" /> </div> <div class="mt-4"> <button class="btn btn-danger px-4 validate">Validate</button> </div> </div> <div class="card-2"> <div class="content d-flex justify-content-center align-items-center"> <span>Didn't get the code</span> <a href="#" class="text-decoration-none ms-3">Resend(1/3)</a> </div> </div> </div>
-</div> */
-
-    // echo html_writer::tag('hr', '');
-    // echo html_writer::start_tag('form', [ 'action' => $PAGE->url, 'method' => 'post' ]);
-    // // if (!$exist = $DB->record_exists('user', [ 'phone1' => $tel, 'confirmed' => true, 'deleted' => false ])) {
-
-    // echo html_writer::start_div('d-flex');
-    // echo html_writer::tag('input', '', [ 'placeholder' => get_string('firstname'), 'name' => 'firstname', 'autocomplete' => 'firstname', 'class' => 'form-control rounded m-2' ]);
-    // echo html_writer::tag('input', '', [ 'placeholder' => get_string('lastname'), 'name' => 'lastname', 'autocomplete' => 'lastname', 'class' => 'form-control rounded m-2' ]);
-    // echo html_writer::end_div();
-
-    // }
-
-    /*  echo html_writer::tag('style', '.inputs input {
-         width: 40px;
-         height: 40px
-     }
-
-     input[type=number]::-webkit-inner-spin-button,
-     input[type=number]::-webkit-outer-spin-button {
-         -webkit-appearance: none;
-         -moz-appearance: none;
-         appearance: none;
-         margin: 0
-     }'); */
-    /*  echo html_writer::start_div('d-flex flex-row justify-content-center my-2 inputs');
-     echo html_writer::tag('input', '', [ 'name' => 'code[]', 'class' => 'm-2 text-center form-control rounded' ]);
-     echo html_writer::tag('input', '', [ 'name' => 'code[]', 'class' => 'm-2 text-center form-control rounded' ]);
-     echo html_writer::tag('input', '', [ 'name' => 'code[]', 'class' => 'm-2 text-center form-control rounded' ]);
-     echo html_writer::tag('input', '', [ 'name' => 'code[]', 'class' => 'm-2 text-center form-control rounded' ]);
-     echo html_writer::tag('input', '', [ 'name' => 'code[]', 'class' => 'm-2 text-center form-control rounded' ]);
-     echo html_writer::tag('input', '', [ 'name' => 'code[]', 'class' => 'm-2 text-center form-control rounded' ]);
-     echo html_writer::tag('input', '', [ 'name' => 'code[]', 'class' => 'm-2 text-center form-control rounded' ]);
-     echo html_writer::tag('input', '', [ 'name' => 'code[]', 'class' => 'm-2 text-center form-control rounded' ]);
-     echo html_writer::end_div(); */
-
-    /* echo html_writer::tag('input', '', [ 'value' => $tel, 'name' => 'to', 'type' => "hidden" ]);
-    echo html_writer::tag('input', '', [ 'value' => sesskey(), 'name' => 'sesskey', 'type' => "hidden" ]);
-    echo html_writer::tag('button', 'Validate', [ 'class' => 'btn btn-primary' ]);
-    echo html_writer::end_tag('form'); */
+    echo html_writer::end_div();
 
 }
 
 echo $OUTPUT->footer();
+?>
+<script>
+    function getIp(callback) {
+        fetch('https://ipinfo.io/json?token=a05be40191d88c', { headers: { 'Accept': 'application/json' } })
+            .then((resp) => resp.json())
+            .catch(() => {
+                return {
+                    country: 'sa',
+                };
+            })
+            .then((resp) => callback(resp.country));
+    }
+
+    const phoneInputField = document.querySelector("#tel");
+    const phoneInput = window.intlTelInput(phoneInputField, {
+        initialCountry: "auto",
+        geoIpLookup: getIp,
+        utilsScript:
+            "https://cdnjs.cloudflare.com/ajax/libs/intl-tel-input/17.0.8/js/utils.js",
+    });
+</script>

@@ -37,3 +37,5 @@ $string['auth_tokendescription']      = 'Twilio Account Authentication Token';
 $string['auth_servicesid']            = 'Service SID';
 $string['auth_servicesiddescription'] = 'Twilio Account Service SID';
 
+//  login page
+$string['verify'] = 'Verify';
