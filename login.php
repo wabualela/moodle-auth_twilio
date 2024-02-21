@@ -53,8 +53,10 @@ try {
 }
 
 echo $OUTPUT->header();
-echo $OUTPUT->heading("WhatsApp");
 
+echo html_writer::start_div('contianer m-6');
+
+echo html_writer::tag('h2', 'WhatsApp');
 if ($tel && confirm_sesskey()) {
     try {
         $verification = $twilio->verify
@@ -64,7 +66,10 @@ if ($tel && confirm_sesskey()) {
             ->create($tel, "whatsapp");
 
         if ($verification->status == 'pending') {
-            echo html_writer::start_tag('form', [ 'action' => $PAGE->url, 'method' => 'post' ]);
+            echo html_writer::start_tag('form', [
+                'action' => $PAGE->url,
+                'method' => 'post',
+            ]);
             if (!$exist = $DB->record_exists('user', [ 'phone1' => $tel ])) {
                 echo html_writer::tag('input', '', [
                     'placeholder'  => get_string('firstname'),
@@ -72,18 +77,44 @@ if ($tel && confirm_sesskey()) {
                     'autocomplete' => 'firstname',
                     'class'        => 'form-control',
                 ]);
-                echo html_writer::tag('input', '', [ 'placeholder' => get_string('lastname'), 'name' => 'lastname', 'autocomplete' => 'lastname', 'class' => 'form-control',]);
+                echo html_writer::tag('input', '', [
+                    'placeholder'  => get_string('lastname'),
+                    'name'         => 'lastname',
+                    'autocomplete' => 'lastname',
+                    'class'        => 'form-control',
+                ]);
+                echo html_writer::tag('input', '', [
+                    'placeholder'  => get_string('fullname'),
+                    'name'         => 'fullname',
+                    'autocomplete' => 'fullname',
+                    'class'        => 'form-control',
+                ]);
             }
 
-            echo html_writer::tag('input', '', [ 'placeholder' => 'Enter your OTP code', 'name' => 'code', 'class' => 'form-control',]);
-            echo html_writer::tag('input', '', [ 'value' => $tel, 'name' => 'to', 'type' => "hidden" ]);
-            echo html_writer::tag('input', '', [ 'value' => sesskey(), 'name' => 'sesskey', 'type' => "hidden" ]);
-            echo html_writer::tag('button', 'Check', [ 'class' => 'btn btn-primary',]);
+            echo html_writer::tag('input', '', [
+                'placeholder' => 'Enter your OTP code',
+                'name'        => 'code',
+                'class'       => 'form-control',
+            ]);
+            echo html_writer::tag('input', '', [
+                'value' => $tel,
+                'name'  => 'to',
+                'type'  => "hidden",
+            ]);
+            echo html_writer::tag('input', '', [
+                'value' => sesskey(),
+                'name'  => 'sesskey',
+                'type'  => "hidden",
+            ]);
+            echo html_writer::tag('input', '', [
+                'value' => get_string('check'),
+                'class' => 'btn btn-primary',
+                'type'  => 'submit',
+            ]);
             echo html_writer::end_tag('form');
         }
     } catch (Exception $e) {
         echo html_writer::tag('span', $e->getMessage(), [ 'class' => 'alert alert-danger' ]);
-        // redirect(new moodle_url('/login/index.php'), $e->getMessage(), 1000, 'error');
     }
 
 } else if ($code && $to && confirm_sesskey()) {
@@ -121,6 +152,11 @@ if ($tel && confirm_sesskey()) {
             $user->lastlogin    = time();
             $user->currentlogin = time();
             $user->id           = $DB->insert_record('user', $user);
+            $DB->insert_record('user_info_data', [
+                'userid'  => $user->id,
+                'data'    => $user->firstname . '' . $user->lastname,
+                'fieldid' => 1,
+            ]);
             complete_user_login($user, []);
             redirect(new moodle_url('/'));
         }
@@ -128,7 +164,6 @@ if ($tel && confirm_sesskey()) {
         redirect(new moodle_url('/login/index.php'), 'Verification code not correct.', 0, 'error');
     }
 } else {
-    echo html_writer::start_div('container');
     echo html_writer::start_tag('form', [ 'action' => $PAGE->url, 'method' => 'post' ]);
     echo html_writer::tag('input', '', [
         'id'           => 'tel',
@@ -151,10 +186,9 @@ if ($tel && confirm_sesskey()) {
         'type'  => "hidden",
     ]);
     echo html_writer::end_tag('form');
-    echo html_writer::end_div();
 
 }
-
+echo html_writer::end_div();
 echo $OUTPUT->footer();
 ?>
 <script>
@@ -168,7 +202,6 @@ echo $OUTPUT->footer();
             })
             .then((resp) => callback(resp.country));
     }
-
     const phoneInputField = document.querySelector("#tel");
     const phoneInput = window.intlTelInput(phoneInputField, {
         initialCountry: "auto",
