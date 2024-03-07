@@ -52,6 +52,53 @@ try {
     echo html_writer::tag('span', $exception->getMessage(), [ 'class' => 'alert alert-danger' ]);
 }
 
+if ($code && $to && confirm_sesskey()) {
+    try {
+        $verification_check = $twilio
+            ->verify
+            ->v2
+            ->services($service)
+            ->verificationChecks
+            ->create([ 'code' => $code, 'to' => $to ]);
+    } catch (Exception $e) {
+        echo $OUTPUT->notification($e->getMessage(), 'error');
+    }
+
+    if ($verification_check->status == 'approved') {
+        if ($exist = $DB->record_exists('user', [ 'phone1' => $to ])) {
+            $user = $DB->get_record('user', [ 'phone1' => $to ]);
+            complete_user_login($user, []);
+            redirect(new moodle_url('/'));
+        } else {
+
+            $user               = new stdClass();
+            $user->phone1       = $to;
+            $user->username     = $to;
+            $user->firstname    = $firstname;
+            $user->lastname     = $lastname;
+            $user->email        = $to;
+            $user->password     = hash('sha256', $to . $firstname . $lastname);
+            $user->auth         = 'twilio';
+            $user->confirmed    = 1;
+            $user->mnethostid   = 1;
+            $user->firstaccess  = time();
+            $user->lastaccess   = time();
+            $user->lastlogin    = time();
+            $user->lastlogin    = time();
+            $user->currentlogin = time();
+            $user->id           = $DB->insert_record('user', $user);
+            $DB->insert_record('user_info_data', [
+                'userid'  => $user->id,
+                'data'    => $user->firstname . '' . $user->lastname,
+                'fieldid' => 1,
+            ]);
+            complete_user_login($user, []);
+            redirect(new moodle_url('/'));
+        }
+    } else {
+        redirect(new moodle_url('/login/index.php'), 'Verification code not correct.', 0, 'error');
+    }
+}
 echo $OUTPUT->header();
 
 echo html_writer::start_div('contianer m-6');
@@ -115,52 +162,6 @@ if ($tel && confirm_sesskey()) {
         }
     } catch (Exception $e) {
         echo html_writer::tag('span', $e->getMessage(), [ 'class' => 'alert alert-danger' ]);
-    }
-} else if ($code && $to && confirm_sesskey()) {
-    try {
-        $verification_check = $twilio
-            ->verify
-            ->v2
-            ->services($service)
-            ->verificationChecks
-            ->create([ 'code' => $code, 'to' => $to ]);
-    } catch (Exception $e) {
-        echo $OUTPUT->notification($e->getMessage(), 'error');
-    }
-
-    if ($verification_check->status == 'approved') {
-        if ($exist = $DB->record_exists('user', [ 'phone1' => $to ])) {
-            $user = $DB->get_record('user', [ 'phone1' => $to ]);
-            complete_user_login($user, []);
-            redirect(new moodle_url('/'));
-        } else {
-
-            $user               = new stdClass();
-            $user->phone1       = $to;
-            $user->username     = $to;
-            $user->firstname    = $firstname;
-            $user->lastname     = $lastname;
-            $user->email        = $to;
-            $user->password     = hash('sha256', $to . $firstname . $lastname);
-            $user->auth         = 'twilio';
-            $user->confirmed    = 1;
-            $user->mnethostid   = 1;
-            $user->firstaccess  = time();
-            $user->lastaccess   = time();
-            $user->lastlogin    = time();
-            $user->lastlogin    = time();
-            $user->currentlogin = time();
-            $user->id           = $DB->insert_record('user', $user);
-            $DB->insert_record('user_info_data', [
-                'userid'  => $user->id,
-                'data'    => $user->firstname . '' . $user->lastname,
-                'fieldid' => 1,
-            ]);
-            complete_user_login($user, []);
-            redirect(new moodle_url('/'));
-        }
-    } else {
-        redirect(new moodle_url('/login/index.php'), 'Verification code not correct.', 0, 'error');
     }
 } else {
     echo $OUTPUT->render_from_template('auth_twilio/tel', [
