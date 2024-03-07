@@ -56,7 +56,7 @@ echo $OUTPUT->header();
 
 echo html_writer::start_div('contianer m-6');
 
-echo html_writer::tag('h2', 'WhatsApp');
+echo html_writer::tag('h2', get_string('whatsapp', 'auth_twilio'));
 if ($tel && confirm_sesskey()) {
     try {
         $verification = $twilio->verify
@@ -116,7 +116,6 @@ if ($tel && confirm_sesskey()) {
     } catch (Exception $e) {
         echo html_writer::tag('span', $e->getMessage(), [ 'class' => 'alert alert-danger' ]);
     }
-
 } else if ($code && $to && confirm_sesskey()) {
     try {
         $verification_check = $twilio
@@ -164,49 +163,11 @@ if ($tel && confirm_sesskey()) {
         redirect(new moodle_url('/login/index.php'), 'Verification code not correct.', 0, 'error');
     }
 } else {
-    echo html_writer::start_tag('form', [ 'action' => $PAGE->url, 'method' => 'post' ]);
-    echo html_writer::tag('input', '', [
-        'id'           => 'tel',
-        'name'         => 'tel',
-        'class'        => 'form-control',
-        'placeholder'  => 'Enter your phone number',
-        'autocomplete' => 'tel',
-        'required'     => true,
-        'autofocus'    => true,
+    echo $OUTPUT->render_from_template('auth_twilio/tel', [
+        'url'     => $PAGE->url,
+        'sesskey' => sesskey(),
     ]);
-    echo html_writer::tag('input', '', [
-        'type'  => 'submit',
-        'value' => get_string('verify', 'auth_twilio'),
-        'class' => 'btn btn-success mx-2',
-        'role'  => 'button',
-    ]);
-    echo html_writer::tag('input', '', [
-        'name'  => 'sesskey',
-        'value' => sesskey(),
-        'type'  => "hidden",
-    ]);
-    echo html_writer::end_tag('form');
 
 }
 echo html_writer::end_div();
 echo $OUTPUT->footer();
-?>
-<script>
-    function getIp(callback) {
-        fetch('https://ipinfo.io/json?token=a05be40191d88c', { headers: { 'Accept': 'application/json' } })
-            .then((resp) => resp.json())
-            .catch(() => {
-                return {
-                    country: 'sa',
-                };
-            })
-            .then((resp) => callback(resp.country));
-    }
-    const phoneInputField = document.querySelector("#tel");
-    const phoneInput = window.intlTelInput(phoneInputField, {
-        initialCountry: "auto",
-        geoIpLookup: getIp,
-        utilsScript:
-            "https://cdnjs.cloudflare.com/ajax/libs/intl-tel-input/17.0.8/js/utils.js",
-    });
-</script>

@@ -46,8 +46,8 @@ class auth_plugin_twilio extends auth_plugin_base {
         $result   = [];
         $result[] = [
             'url'     => new moodle_url('/auth/twilio/login.php', [ 'wantsurl' => $wantsurl, 'sesskey' => sesskey()]),
-            'iconurl' => 'https://th.bing.com/th/id/OIP.Nf-m41NGgoClnltGcriroAHaHl?rs=1&pid=ImgDetMain',
-            'name'    => 'WhatsApp',
+            'iconurl' => new moodle_url('/auth/twilio/pix/whatsapp.jpg'),
+            'name'    => get_string('whatsapp', 'auth_twilio'),
         ];
         return $result;
 
@@ -63,5 +63,13 @@ class auth_plugin_twilio extends auth_plugin_base {
         $user->phone1 = $tel;
         complete_user_login($user);
         redirect(new moodle_url('/'));
+    }
+    /**
+     * Check if the provided tel is valid tel
+     * @param string $tel
+     * @return bool|int
+     */
+    public static function is_valild_tel($tel): bool {
+        return preg_match('/^\+?([0-9]{2})\)?[-. ]?([0-9]{4})[-. ]?([0-9]{4})$/', $tel);
     }
 }

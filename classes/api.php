@@ -15,6 +15,7 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 namespace auth_twilio;
+use html_writer;
 
 defined('MOODLE_INTERNAL') || die();
 
@@ -101,5 +102,22 @@ class api {
         return $twilio->verify->v2->services($service)
             ->verificationChecks
             ->create($params);
+    }
+
+    public static function validate_tel($tel) {
+        if (filter_var($tel, FILTER_VALIDATE_INT) && strlen($tel) == 10) {
+            // echo "Valid US phone number: $tel";
+        } else {
+            echo "Invalid phone number";
+        }
+    }
+
+    public static function redirectPost($url) {
+
+        echo html_writer::start_tag('form', [
+            'action' => $url,
+            'method' => 'post',
+        ]);
+        echo html_writer::end_tag('form');
     }
 }
