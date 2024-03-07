@@ -15,7 +15,9 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 namespace auth_twilio;
-use html_writer;
+
+use moodle_url;
+use stdClass;
 
 defined('MOODLE_INTERNAL') || die();
 
@@ -31,17 +33,6 @@ use Twilio\Rest\Client;
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 class api {
-
-    /**
-     * Account SID
-     * @var string
-     */
-    var $sid;
-    /**
-     * Auth Token
-     * @var string
-     */
-    public string $token;
     /**
      * Service Token
      * @var string
@@ -49,23 +40,16 @@ class api {
     public string $service;
     /**
      * Plugin configuration
-     * @var string
-     */
-    public string $config;
-    /**
-     * Plugin configuration
      * @var Client Twilio API Client
      */
-    public string $twilio;
+    public Client $twilio;
 
     /**
      * Constructor.
      */
     public function __construct() {
-        $this->sid     = "ACb9c458a9428b1ce16603521ea811af62";
-        $this->token   = "be64f692ed1f906386b81397c6e84587";
-        $this->service = "VA1abf832cfc8f432e8b1f4ae113885dc6";
-        $this->twilio  = new Client($this->sid, $this->service);
+        $this->service = get_config('auth_twilio', 'servicesid');
+        $this->twilio  = new Client(get_config('auth_twilio', 'accountsid'), get_config('auth_twilio', 'token'));
     }
 
     /**
@@ -73,51 +57,70 @@ class api {
      *
      * @return bool
      */
-    public static function is_enabled() {
+    public function is_enabled() {
         return is_enabled_auth('twilio');
     }
 
-
-    public static function send_otp_message($tel) {
-
-        $sid     = "ACb9c458a9428b1ce16603521ea811af62";
-        $token   = "05d3420ecc0d88a0ffa2d69ee3bb0147";
-        $service = "VA1abf832cfc8f432e8b1f4ae113885dc6";
-        $twilio  = new Client($sid, $token);
-
-        return $twilio
+    public function verifications($tel) {
+        return $this->twilio
             ->verify
             ->v2
-            ->services($service)
+            ->services($this->service)
             ->verifications
             ->create($tel, "whatsapp");
     }
 
-    public static function check($params = []) {
-        $sid     = "ACb9c458a9428b1ce16603521ea811af62";
-        $token   = "05d3420ecc0d88a0ffa2d69ee3bb0147";
-        $service = "VA1abf832cfc8f432e8b1f4ae113885dc6";
-        $twilio  = new Client($sid, $token);
-
-        return $twilio->verify->v2->services($service)
+    public function verificationChecks($code, $tel) {
+        return $this->twilio
+            ->verify
+            ->v2
+            ->services($this->service)
             ->verificationChecks
-            ->create($params);
+            ->create([ 'code' => $code, 'to' => $tel ]);
     }
 
-    public static function validate_tel($tel) {
-        if (filter_var($tel, FILTER_VALIDATE_INT) && strlen($tel) == 10) {
-            // echo "Valid US phone number: $tel";
+    public function complete_login($data) {
+        global $DB;
+        if ($this->tel_exist($data['phone'])) {
+            $user = $DB->get_record('user', [ 'phone1' => $data['phone'] ]);
         } else {
-            echo "Invalid phone number";
+            $user               = new stdClass();
+            $user->phone1       = $data['phone'];
+            $user->username     = $data['phone'];
+            $user->firstname    = $data['firstname'];
+            $user->lastname     = $data['lastname'];
+            $user->email        = $data['phone'] . '@gmail.com';
+            $user->password     = hash('sha256', $data['phone']);
+            $user->auth         = 'twilio';
+            $user->confirmed    = 1;
+            $user->mnethostid   = 1;
+            $user->firstaccess  = time();
+            $user->lastaccess   = time();
+            $user->lastlogin    = time();
+            $user->lastlogin    = time();
+            $user->currentlogin = time();
+            $user->id           = $DB->insert_record('user', $user);
+            $DB->insert_record('user_info_data', [
+                'userid'  => $user->id,
+                'data'    => $data['fullname'],
+                'fieldid' => 1,
+            ]);
         }
+        complete_user_login($user, []);
+        redirect(new moodle_url('/'));
     }
 
-    public static function redirectPost($url) {
+    public function tel_exist($tel) {
+        global $DB;
+        return $DB->record_exists_sql("SELECT id FROM {user} WHERE phone1 LIKE '%$tel%'");
+    }
 
-        echo html_writer::start_tag('form', [
-            'action' => $url,
-            'method' => 'post',
-        ]);
-        echo html_writer::end_tag('form');
+    public function get_countries_choices() {
+        $countries = get_string_manager()->get_list_of_countries();
+        $choices = [];
+        foreach ($countries as $key => $value) {
+            $choices[] = $value;
+        }
+        return $choices;
     }
 }

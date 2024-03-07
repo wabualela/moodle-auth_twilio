@@ -1,0 +1,73 @@
+{{!
+    This file is part of Moodle - http://moodle.org/
+
+    Moodle is free software: you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation, either version 3 of the License, or
+    (at your option) any later version.
+
+    Moodle is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU General Public License for more details.
+
+    You should have received a copy of the GNU General Public License
+    along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
+}}
+{{!
+    @template auth_twilio/otp_form
+
+    TODO describe template tel
+
+    Example context (json):
+    {
+    }
+}}
+<div class="rui-login-layout rui-login-layout-simple rui-login-layout--1">
+    <div class="rui-login-box">
+        <div class="rui-login-content">
+            <div class="rui-loginpage-intro">
+                <div class="rui-loginpage-intro-logo">
+                    <a href="{{url}}">
+                        <h2>{{#str}} whatsapp, auth_twilio {{/str}}</h2>
+                    </a>
+                </div>
+            </div>
+            <div class="rui-login-form">
+                <form method="POST" acion="{{url}}" >
+                    <div class="form-group">
+                        <label for="code">{{#str}} enterotp, auth_twilio {{/str}}</label>
+                        <input type="text" class="form-control" id="code" name="code" aria-describedby="emailHelp">
+                        <small id="codeHelp" class="form-text text-muted">
+                        One Time Password (OTP) has been sent via WhatsApp to {{tel}}</small>
+                    </div>
+                   {{#exist}}
+                    <div class="form-group">
+                        <label for="firstname">First Name <span class="text-danger">*</span></label>
+                        <input type="text" name="firstname" id="firstname" class="form-control" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="lastname">Last Name <span class="text-danger">*</span></label>
+                        <input type="text" name="lastname" id="lastname" class="form-control" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="fullname">Full Name (for certificate) <span class="text-danger">*</span></label>
+                        <input type="text" name="fullname" id="fullname" class="form-control" required>
+                    </div>
+                    <!-- <div class="form-group">
+                        <label for="countries">Example select</label>
+                        <select class="form-control" id="countries">
+                        {{#countries}}
+                            <option>{{countries}}</option>
+                        {{/countries}}
+                        </select>
+                    </div> -->
+                   {{/exist}}
+                    <input name="sesskey" type="hidden" value="{{sesskey}}">
+                    <input name="to" type="hidden" value="{{tel}}">
+                    <input type="submit" class="btn btn-lg btn-primary btn-block mt-3">
+                </form>
+            </div>
+        </div>
+    </div>
+</div>

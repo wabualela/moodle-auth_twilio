@@ -43,4 +43,5 @@ $string['telplaceholder']     = 'Enter your phone number';
 $string['telinvalidfeedback'] = 'Tel invalid feedback';
 $string['valide']             = '✓ Valid';
 $string['notvalidtel']        = 'Not valid phone number';
+$string['enterotp']           = 'Enter your OTP code';
 

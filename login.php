@@ -31,6 +31,7 @@ $code      = optional_param('code', '', PARAM_RAW);
 $to        = optional_param('to', '', PARAM_RAW);
 $firstname = optional_param('firstname', '', PARAM_RAW);
 $lastname  = optional_param('lastname', '', PARAM_RAW);
+$fullname  = optional_param('fullname', '', PARAM_RAW);
 
 $PAGE->set_url(new moodle_url('/auth/twilio/login.php', []));
 $PAGE->set_pagelayout('login');
@@ -38,137 +39,40 @@ $PAGE->set_context(context_system::instance());
 
 require_sesskey();
 
-if (!\auth_twilio\api::is_enabled()) {
+$twilio = new \auth_twilio\api();
+
+if (!$twilio->is_enabled()) {
     throw new \moodle_exception('notenabled', 'auth_twilio');
 }
 
-try {
-    $sid     = get_config('auth_twilio', 'accountsid');
-    $token   = get_config('auth_twilio', 'token');
-    $service = get_config('auth_twilio', 'servicesid');
-    $twilio  = new Twilio\Rest\Client($sid, $token);
-
-} catch (Exception $exception) {
-    echo html_writer::tag('span', $exception->getMessage(), [ 'class' => 'alert alert-danger' ]);
-}
-
 if ($code && $to && confirm_sesskey()) {
-    try {
-        $verification_check = $twilio
-            ->verify
-            ->v2
-            ->services($service)
-            ->verificationChecks
-            ->create([ 'code' => $code, 'to' => $to ]);
-    } catch (Exception $e) {
-        echo $OUTPUT->notification($e->getMessage(), 'error');
-    }
 
+    $verification_check = $twilio->verificationChecks($code, $to);
     if ($verification_check->status == 'approved') {
-        if ($exist = $DB->record_exists('user', [ 'phone1' => $to ])) {
-            $user = $DB->get_record('user', [ 'phone1' => $to ]);
-            complete_user_login($user, []);
-            redirect(new moodle_url('/'));
-        } else {
-
-            $user               = new stdClass();
-            $user->phone1       = $to;
-            $user->username     = $to;
-            $user->firstname    = $firstname;
-            $user->lastname     = $lastname;
-            $user->email        = $to;
-            $user->password     = hash('sha256', $to . $firstname . $lastname);
-            $user->auth         = 'twilio';
-            $user->confirmed    = 1;
-            $user->mnethostid   = 1;
-            $user->firstaccess  = time();
-            $user->lastaccess   = time();
-            $user->lastlogin    = time();
-            $user->lastlogin    = time();
-            $user->currentlogin = time();
-            $user->id           = $DB->insert_record('user', $user);
-            $DB->insert_record('user_info_data', [
-                'userid'  => $user->id,
-                'data'    => $user->firstname . '' . $user->lastname,
-                'fieldid' => 1,
-            ]);
-            complete_user_login($user, []);
-            redirect(new moodle_url('/'));
-        }
-    } else {
-        redirect(new moodle_url('/login/index.php'), 'Verification code not correct.', 0, 'error');
+        $data['firstname'] = $firstname;
+        $data['lastname']  = $lastname;
+        $data['fullname']  = $fullname;
+        $data['phone']     = $to;
+        $twilio->complete_login($data);
     }
 }
+
 echo $OUTPUT->header();
-
-echo html_writer::start_div('contianer m-6');
-
-echo html_writer::tag('h2', get_string('whatsapp', 'auth_twilio'));
 if ($tel && confirm_sesskey()) {
-    try {
-        $verification = $twilio->verify
-            ->v2
-            ->services($service)
-            ->verifications
-            ->create($tel, "whatsapp");
-
-        if ($verification->status == 'pending') {
-            echo html_writer::start_tag('form', [
-                'action' => $PAGE->url,
-                'method' => 'post',
-            ]);
-            if (!$exist = $DB->record_exists('user', [ 'phone1' => $tel ])) {
-                echo html_writer::tag('input', '', [
-                    'placeholder'  => get_string('firstname'),
-                    'name'         => 'firstname',
-                    'autocomplete' => 'firstname',
-                    'class'        => 'form-control',
-                ]);
-                echo html_writer::tag('input', '', [
-                    'placeholder'  => get_string('lastname'),
-                    'name'         => 'lastname',
-                    'autocomplete' => 'lastname',
-                    'class'        => 'form-control',
-                ]);
-                echo html_writer::tag('input', '', [
-                    'placeholder'  => get_string('fullname'),
-                    'name'         => 'fullname',
-                    'autocomplete' => 'fullname',
-                    'class'        => 'form-control',
-                ]);
-            }
-
-            echo html_writer::tag('input', '', [
-                'placeholder' => 'Enter your OTP code',
-                'name'        => 'code',
-                'class'       => 'form-control',
-            ]);
-            echo html_writer::tag('input', '', [
-                'value' => $tel,
-                'name'  => 'to',
-                'type'  => "hidden",
-            ]);
-            echo html_writer::tag('input', '', [
-                'value' => sesskey(),
-                'name'  => 'sesskey',
-                'type'  => "hidden",
-            ]);
-            echo html_writer::tag('input', '', [
-                'value' => get_string('check'),
-                'class' => 'btn btn-primary',
-                'type'  => 'submit',
-            ]);
-            echo html_writer::end_tag('form');
-        }
-    } catch (Exception $e) {
-        echo html_writer::tag('span', $e->getMessage(), [ 'class' => 'alert alert-danger' ]);
+    $verification = $twilio->verifications($tel);
+    if ($verification->status == 'pending') {
+        echo $OUTPUT->render_from_template('auth_twilio/otp_form', [
+            'url'       => $PAGE->url,
+            'exist'     => !$twilio->tel_exist($tel),
+            'tel'       => $tel,
+            'sesskey'   => sesskey(),
+            // 'countries' => $twilio->get_countries_choices(),
+        ]);
     }
 } else {
-    echo $OUTPUT->render_from_template('auth_twilio/tel', [
+    echo $OUTPUT->render_from_template('auth_twilio/tel_form', [
         'url'     => $PAGE->url,
         'sesskey' => sesskey(),
     ]);
-
 }
-echo html_writer::end_div();
 echo $OUTPUT->footer();

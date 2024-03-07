@@ -15,7 +15,7 @@
     along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 }}
 {{!
-    @template auth_twilio/tel
+    @template auth_twilio/tel_form
 
     TODO describe template tel
 
@@ -23,18 +23,31 @@
     {
     }
 }}
-<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/intl-tel-input@19.5.5/build/css/intlTelInput.css">
-<div>
-    <form onsubmit="process(event)" id="login-form" > <!-- action="{{url}}" method="POST"> -->
-        <input id="tel" name="tel" type="tel" autocomplete="tel" class="form-control" required style="padding-left: 8rem !important;">
-        <input name="sesskey" type="hidden" value="{{sesskey}}">
-        <button id="btn" type="submit"class="btn btn-primary">
-            {{#str}} validate, auth_twilio {{/str}}
-        </button>
-        <small id="valid-msg" class="hidden form-text text-success">{{#str}} valide, auth_twilio {{/str}}</small>
-        <small id="error-msg" class="hidden form-text text-danger"></small>
-    </form>
-    <div class="alert alert-info d-none"></div>
+<div class="rui-login-layout rui-login-layout-simple rui-login-layout--1">
+    <div class="rui-login-box">
+        <div class="rui-login-content">
+            <div class="rui-loginpage-intro">
+                <div class="rui-loginpage-intro-logo">
+                    <a href="{{url}}">
+                        <h2>{{#str}} whatsapp, auth_twilio {{/str}}</h2>
+                    </a>
+                </div>
+            </div>
+            <div class="rui-login-form">
+                <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/intl-tel-input@19.5.5/build/css/intlTelInput.css">
+                <form onsubmit="process(event)" id="login-form" >
+                        <input id="tel" name="tel" type="tel" autocomplete="tel" class="form-control" required style="padding-left: 8rem !important;">
+                    <input name="sesskey" type="hidden" value="{{sesskey}}">
+                    <button id="btn" type="submit"class="btn btn-lg btn-primary btn-block mt-3">
+                        {{#str}} validate, auth_twilio {{/str}}
+                    </button>
+                    <small id="valid-msg" class="hidden form-text text-success">{{#str}} valide, auth_twilio {{/str}}</small>
+                    <small id="error-msg" class="hidden form-text text-danger"></small>
+                </form>
+                <div class="alert alert-info d-none"></div>
+            </div>
+        </div>
+    </div>
 </div>
 <script src="https://cdn.jsdelivr.net/npm/intl-tel-input@19.5.5/build/js/intlTelInput.min.js"></script>
 <script>
