@@ -38,10 +38,18 @@ $string['auth_tokendescription']      = 'Twilio Account Authentication Token';
 $string['auth_servicesid']            = 'Service SID';
 $string['auth_servicesiddescription'] = 'Twilio Account Service SID';
 //  login page
-$string['validate']           = 'Validate';
-$string['telplaceholder']     = 'Enter your phone number';
-$string['telinvalidfeedback'] = 'Tel invalid feedback';
-$string['valide']             = '✓ Valid';
-$string['notvalidtel']        = 'Not valid phone number';
-$string['enterotp']           = 'Enter your OTP code';
+$string['validate']               = 'Validate';
+$string['telplaceholder']         = 'Enter your phone number';
+$string['telinvalidfeedback']     = 'Tel invalid feedback';
+$string['valide']                 = '✓ Valid';
+$string['notvalidtel']            = 'Not valid phone number';
+$string['enterotp']               = 'Enter your OTP code';
+$string['fullnameforcertificate'] = 'Full Name for certificate';
+$string['otphelp']                = 'One Time Password (OTP) has been sent via WhatsApp to {$a}';
+// tel errors msg
+$string['invalidnumber']      = 'رقم الهاتف غير صحيح';
+$string['invalidcountrycode'] = 'رمز البلد غير صالح';
+$string['tooshort']           = 'رقم الهاتف قصير جدًا';
+$string['toolong']            = 'رقم الهاتف طويل جدًا';
+
 

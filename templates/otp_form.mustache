@@ -36,22 +36,21 @@
             <div class="rui-login-form">
                 <form method="POST" acion="{{url}}" >
                     <div class="form-group">
-                        <label for="code">{{#str}} enterotp, auth_twilio {{/str}}</label>
-                        <input type="text" class="form-control" id="code" name="code" aria-describedby="emailHelp">
-                        <small id="codeHelp" class="form-text text-muted">
-                        One Time Password (OTP) has been sent via WhatsApp to {{tel}}</small>
+                        <label for="code">{{#str}} enterotp, auth_twilio {{/str}}<span class="text-danger">*</span></label>
+                        <input type="text" class="form-control" id="code" name="code" aria-describedby="codeHelp" required>
+                        <small id="codeHelp" class="form-text text-muted">{{#str}}otphelp, auth_twilio, {{tel}} {{/str}}</small>
                     </div>
                    {{#exist}}
                     <div class="form-group">
-                        <label for="firstname">First Name <span class="text-danger">*</span></label>
+                        <label for="firstname">{{#str}} firstname {{/str}}<span class="text-danger">*</span></label>
                         <input type="text" name="firstname" id="firstname" class="form-control" required>
                     </div>
                     <div class="form-group">
-                        <label for="lastname">Last Name <span class="text-danger">*</span></label>
+                        <label for="lastname">{{#str}} lastname {{/str}}<span class="text-danger">*</span></label>
                         <input type="text" name="lastname" id="lastname" class="form-control" required>
                     </div>
                     <div class="form-group">
-                        <label for="fullname">Full Name (for certificate) <span class="text-danger">*</span></label>
+                        <label for="fullname">{{#str}} fullnameforcertificate, auth_twilio {{/str}}<span class="text-danger">*</span></label>
                         <input type="text" name="fullname" id="fullname" class="form-control" required>
                     </div>
                     <!-- <div class="form-group">

@@ -41,8 +41,14 @@ $string['auth_servicesid']            = 'رقم الخدمة';
 $string['auth_servicesiddescription'] = 'رقم الخدمة من حساب تويلو';
 
 //  login page
-$string['validate']           = 'ارسل';
-$string['telplaceholder']     = 'أدخل رقم هاتفك';
-$string['telinvalidfeedback'] = 'الرجاء ادخال رقم جوال صحيح';
-$string['valide']             = '✓ صالح';
+$string['validate']               = 'ارسل';
+$string['telplaceholder']         = 'أدخل رقم هاتفك';
+$string['telinvalidfeedback']     = 'الرجاء ادخال رقم جوال صحيح';
+$string['valide']                 = '✓ صالح';
+$string['notvalidtel']            = 'ليس رقم هاتف صالح';
+$string['enterotp']               = 'أدخل رمز OTP الخاص بك';
+$string['fullnameforcertificate'] = 'الاسم الكامل للشهادة';
+$string['otphelp']                = 'تم إرسال كلمة مرور مرة واحدة عبر واتساب إلى {$a}';
+
+
 
