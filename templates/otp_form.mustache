@@ -34,13 +34,18 @@
                 </div>
             </div>
             <div class="rui-login-form">
-                <form method="POST" acion="{{url}}" >
-                    <div class="form-group">
+                <form id="otp-form" onsubmit="process(event)">
                         <label for="code">{{#str}} enterotp, auth_twilio {{/str}}<span class="text-danger">*</span></label>
-                        <input type="text" class="form-control" id="code" name="code" aria-describedby="codeHelp" required>
                         <small id="codeHelp" class="form-text text-muted">{{#str}}otphelp, auth_twilio, {{tel}} {{/str}}</small>
+                    <div id="otp" class="d-flex d-flex-row justify-content-between">
+                        <input id="1" style="width:3.3rem" maxlength="1" oninput="this.value=this.value.replace(/[^0-9]/g,'');" type="text" autofocus>
+                        <input id="2" style="width:3.3rem" maxlength="1" oninput="this.value=this.value.replace(/[^0-9]/g,'');" type="text" >
+                        <input id="3" style="width:3.3rem" maxlength="1" oninput="this.value=this.value.replace(/[^0-9]/g,'');" type="text" >
+                        <input id="4" style="width:3.3rem" maxlength="1" oninput="this.value=this.value.replace(/[^0-9]/g,'');" type="text" >
+                        <input id="5" style="width:3.3rem" maxlength="1" oninput="this.value=this.value.replace(/[^0-9]/g,'');" type="text" >
+                        <input id="6" style="width:3.3rem" maxlength="1" oninput="this.value=this.value.replace(/[^0-9]/g,'');" type="text" >
                     </div>
-                   {{#exist}}
+                   {{#notexists}}
                     <div class="form-group">
                         <label for="firstname">{{#str}} firstname {{/str}}<span class="text-danger">*</span></label>
                         <input type="text" name="firstname" id="firstname" class="form-control" required>
@@ -50,23 +55,92 @@
                         <input type="text" name="lastname" id="lastname" class="form-control" required>
                     </div>
                     <div class="form-group">
-                        <label for="fullname">{{#str}} fullnameforcertificate, auth_twilio {{/str}}<span class="text-danger">*</span></label>
-                        <input type="text" name="fullname" id="fullname" class="form-control" required>
+                        <label for="email">{{#str}} email {{/str}}<span class="text-danger">*</span></label>
+                        <input type="email" name="email" id="email" class="form-control" required>
                     </div>
-                    <!-- <div class="form-group">
-                        <label for="countries">Example select</label>
-                        <select class="form-control" id="countries">
-                        {{#countries}}
-                            <option>{{countries}}</option>
-                        {{/countries}}
-                        </select>
-                    </div> -->
-                   {{/exist}}
-                    <input name="sesskey" type="hidden" value="{{sesskey}}">
-                    <input name="to" type="hidden" value="{{tel}}">
+                   {{/notexists}}
                     <input type="submit" class="btn btn-lg btn-primary btn-block mt-3">
                 </form>
             </div>
         </div>
     </div>
 </div>
+
+<script>
+
+function process(event) {
+    event.preventDefault();
+
+    let otpForm   = document.querySelector('#otp-form');
+    let digit1    = document.getElementById('1').value;
+    let digit2    = document.getElementById('2').value;
+    let digit3    = document.getElementById('3').value;
+    let digit4    = document.getElementById('4').value;
+    let digit5    = document.getElementById('5').value;
+    let digit6    = document.getElementById('6').value;
+
+    let codeInput      = createInput(
+        'code',
+        'hidden',
+        digit1 + digit2 + digit3 + digit4 + digit5 + digit6
+    );
+    let sesskeyInput   = createInput(
+        'sesskey',
+        'hidden',
+        '{{sesskey}}'
+    );
+     let toInput   = createInput(
+        'to',
+        'hidden',
+        '{{tel}}'
+    );
+
+    otpForm.appendChild(codeInput);
+    otpForm.appendChild(sesskeyInput);
+    otpForm.appendChild(toInput);
+    otpForm.method = "POST";
+    otpForm.action = "{{url}}";
+
+    otpForm.submit();
+
+}
+
+function createInput(name, type, value){
+    let codeInput   = document.createElement('input');
+    codeInput.type  = type || 'text';
+    codeInput.name  = name;
+    codeInput.value = value;
+    return codeInput;
+}
+
+function OTPInput() {
+  const inputs = document.querySelectorAll('#otp > *[id]');
+  console.log(inputs);
+  for (let i = 0; i < inputs.length; i++) {
+    inputs[i].addEventListener('keydown', function(event) {
+      if (event.key === "Backspace") {
+        inputs[i].value = '';
+        if (i !== 0)
+          inputs[i - 1].focus();
+      } else {
+        if (i === inputs.length - 1 && inputs[i].value !== '') {
+          return true;
+        } else if (event.keyCode > 47 && event.keyCode < 58) {
+          inputs[i].value = event.key;
+          if (i !== inputs.length - 1)
+            inputs[i + 1].focus();
+          event.preventDefault();
+        } else if (event.keyCode > 64 && event.keyCode < 91) {
+          inputs[i].value = String.fromCharCode(event.keyCode);
+          if (i !== inputs.length - 1)
+            inputs[i + 1].focus();
+          event.preventDefault();
+        }
+      }
+    });
+  }
+}
+
+OTPInput();
+
+</script>

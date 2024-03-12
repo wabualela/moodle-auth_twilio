@@ -81,38 +81,35 @@ class api {
 
     public function complete_login($data) {
         global $DB;
-        if ($this->tel_exist($data['phone'])) {
-            $user = $DB->get_record('user', [ 'phone1' => $data['phone'] ]);
+        $user = new stdClass();
+
+        die(var_dump($data));
+        if (self::user_exists_phone($data['tel'])) {
+            $user = $DB->get_record('user', [ 'username' => $data['tel'] ]);
         } else {
-            $user               = new stdClass();
-            $user->phone1       = $data['phone'];
-            $user->username     = $data['phone'];
-            $user->firstname    = $data['firstname'];
-            $user->lastname     = $data['lastname'];
-            $user->email        = $data['phone'] . '@gmail.com';
-            $user->password     = hash('sha256', $data['phone']);
-            $user->auth         = 'twilio';
-            $user->confirmed    = 1;
-            $user->mnethostid   = 1;
-            $user->firstaccess  = time();
-            $user->lastaccess   = time();
-            $user->lastlogin    = time();
-            $user->lastlogin    = time();
-            $user->currentlogin = time();
-            $user->id           = $DB->insert_record('user', $user);
-            $DB->insert_record('user_info_data', [
-                'userid'  => $user->id,
-                'data'    => $data['fullname'],
-                'fieldid' => 1,
-            ]);
+            $user = self::create_new_confirmed_account($data);
         }
         complete_user_login($user, []);
         redirect(new moodle_url('/'));
     }
 
-    public function tel_exist($tel) {
+    /**
+     * check is user exist by phone
+     * @param string $phone
+     * @return bool
+     */
+    public static function user_exists_phone($phone) {
         global $DB;
-        return $DB->record_exists_sql("SELECT id FROM {user} WHERE phone1 LIKE '%$tel%'");
+        $exists = false;
+        if ($DB->record_exists_sql("SELECT id FROM {user} WHERE username LIKE '%$phone%' ")) {
+            $exists = true;
+        }
+
+        if ($DB->record_exists_sql("SELECT id FROM {user} WHERE phone1 LIKE '%$phone%' ")) {
+            $exists = true;
+        }
+
+        return $exists;
     }
 
     public function get_countries_choices() {

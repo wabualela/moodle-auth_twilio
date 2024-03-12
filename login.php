@@ -31,7 +31,7 @@ $code      = optional_param('code', '', PARAM_RAW);
 $to        = optional_param('to', '', PARAM_RAW);
 $firstname = optional_param('firstname', '', PARAM_RAW);
 $lastname  = optional_param('lastname', '', PARAM_RAW);
-$fullname  = optional_param('fullname', '', PARAM_RAW);
+$email     = optional_param('fullname', '', PARAM_RAW);
 
 $PAGE->set_url(new moodle_url('/auth/twilio/login.php', []));
 $PAGE->set_pagelayout('login');
@@ -51,8 +51,8 @@ if ($code && $to && confirm_sesskey()) {
     if ($verification_check->status == 'approved') {
         $data['firstname'] = $firstname;
         $data['lastname']  = $lastname;
-        $data['fullname']  = $fullname;
         $data['phone']     = $to;
+        $data['email']     = $email;
         $twilio->complete_login($data);
     }
 }
@@ -63,10 +63,9 @@ if ($tel && confirm_sesskey()) {
     if ($verification->status == 'pending') {
         echo $OUTPUT->render_from_template('auth_twilio/otp_form', [
             'url'       => $PAGE->url,
-            'exist'     => !$twilio->tel_exist($tel),
+            'notexists' => !$twilio::user_exists_phone($tel),
             'tel'       => $tel,
             'sesskey'   => sesskey(),
-            // 'countries' => $twilio->get_countries_choices(),
         ]);
     }
 } else {
