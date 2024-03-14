@@ -15,7 +15,7 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
- * TODO describe file login
+ * TODO describe file signup
  *
  * @package    auth_twilio
  * @copyright  2024 Wail Abualela <wailabualela@email.com>
@@ -24,23 +24,18 @@
 
 require('../../config.php');
 
-$error = optional_param('error', '', PARAM_TEXT);
+$phone = required_param('phone', PARAM_RAW);
 
-$PAGE->set_url(new moodle_url('/auth/twilio/login.php', []));
+$url     = new moodle_url('/auth/twilio/signup.php', [ 'phone' => $phone ]);
+$nexturl = new moodle_url('/auth/twilio/save.php', []);
+
+$PAGE->set_url($url);
 $PAGE->set_pagelayout('login');
 $PAGE->set_context(context_system::instance());
 
-$twilio  = new \auth_twilio\api();
-$nexturl = new \moodle_url('/auth/twilio/otp.php');
-
-if (!$twilio->is_enabled()) {
-    throw new \moodle_exception('notenabled', 'auth_twilio');
-}
-
-
 echo $OUTPUT->header();
-echo $OUTPUT->render_from_template('auth_twilio/tel', [
-    'url'      => $nexturl,
-    'error'    => $error,
+echo $OUTPUT->render_from_template('auth_twilio/signup', [ 
+    'url'     => $nexturl,
+    'phone'   => $phone,
 ]);
 echo $OUTPUT->footer();

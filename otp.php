@@ -15,7 +15,7 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
- * TODO describe file login
+ * Twilio login
  *
  * @package    auth_twilio
  * @copyright  2024 Wail Abualela <wailabualela@email.com>
@@ -24,23 +24,43 @@
 
 require('../../config.php');
 
+$phone = required_param('phone', PARAM_RAW);
 $error = optional_param('error', '', PARAM_TEXT);
 
-$PAGE->set_url(new moodle_url('/auth/twilio/login.php', []));
+$url     = new moodle_url('/auth/twilio/otp.php', [ 'phone' => $phone ]);
+$nexturl = new moodle_url('/auth/twilio/check.php', []);
+$backurl = new moodle_url('/auth/twilio/login.php');
+
+$PAGE->set_url($url);
 $PAGE->set_pagelayout('login');
 $PAGE->set_context(context_system::instance());
 
-$twilio  = new \auth_twilio\api();
-$nexturl = new \moodle_url('/auth/twilio/otp.php');
+if ($phone) {
+    $twilio = new \auth_twilio\api();
 
-if (!$twilio->is_enabled()) {
-    throw new \moodle_exception('notenabled', 'auth_twilio');
+    if (!$twilio->is_enabled())
+        throw new \moodle_exception('notenabled', 'auth_twilio');
+
+        if (!$error)
+        $verification = $twilio->verifications($phone);
+} else {
+    redirect(new moodle_url('/auth/twilio/login.php', [ 'error' => get_string('phonemissing', 'auth_twilio') ]));
 }
 
-
 echo $OUTPUT->header();
-echo $OUTPUT->render_from_template('auth_twilio/tel', [
-    'url'      => $nexturl,
-    'error'    => $error,
-]);
+
+
+if ($verification->status == 'pending') {
+    echo $OUTPUT->render_from_template('auth_twilio/otp', [
+        'url'   => $nexturl,
+        'phone' => $phone,
+        'error' => $error,
+
+    ]);
+} else {
+    echo '<form method="post" action="' . $backurl . '">
+        <input type="hidden" name="error" value="' . $verification->status . '" />
+    </form>';
+}
+
 echo $OUTPUT->footer();

@@ -15,7 +15,7 @@
     along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 }}
 {{!
-    @template auth_twilio/tel_form
+    @template auth_twilio/tel
 
     TODO describe template tel
 
@@ -23,24 +23,37 @@
     {
     }
 }}
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/intl-tel-input@19.5.6/build/css/intlTelInput.css">
+<style>
+.iti {
+  position: relative;
+  display: block !important;
+}
+</style>
 <div class="rui-login-layout rui-login-layout-simple rui-login-layout--1">
     <div class="rui-login-box">
         <div class="rui-login-content">
             <div class="rui-loginpage-intro">
                 <div class="rui-loginpage-intro-logo">
                     <a href="{{url}}">
-                        <h2>{{#str}} whatsapp, auth_twilio {{/str}}</h2>
+                        <h2>{{#str}} dalail, auth_twilio {{/str}}</h2>
                     </a>
                 </div>
+                {{#error}}
+                    <div class="alert alert-danger" role="alert">
+                        {{error}}
+                    </div>
+                {{/error}}
             </div>
             <div class="rui-login-form">
                 <form onsubmit="process(event)" id="login-form">
-                        <input id="tel" name="tel" type="tel" autocomplete="tel" class="form-control" required>
-                    <input name="sesskey" type="hidden" value="{{sesskey}}">
+                    <div class="form-group">
+                        <label for="phone">{{#str}} phone, auth_twilio {{/str}}</label>
+                        <input id="phone" name="phone" type="tel" autocomplete="tel" class="form-control" required>
+                    </div>
                     <button id="btn" type="submit"class="btn btn-lg btn-primary btn-block mt-3">
-                        {{#str}} validate, auth_twilio {{/str}}
+                        {{#str}} sendcode, auth_twilio {{/str}}
                     </button>
-                    <small id="valid-msg" class="hidden form-text text-success">{{#str}} valide, auth_twilio {{/str}}</small>
                     <small id="error-msg" class="hidden form-text text-danger"></small>
                 </form>
             </div>
@@ -50,10 +63,10 @@
 <script src="https://cdn.jsdelivr.net/npm/intl-tel-input@19.5.5/build/js/intlTelInput.min.js"></script>
 <script>
 const loginForm     = document.querySelector('#login-form');
-const telInputField = document.querySelector("#tel");
+const phoneEl       = document.querySelector("#phone");
 const btn           = document.querySelector("#btn");
 const errorMsg      = document.querySelector("#error-msg");
-const validMsg      = document.querySelector("#valid-msg");
+const info          = document.querySelector(".alert-info");
 
 const errorMap = [
     "Invalid number",
@@ -62,10 +75,9 @@ const errorMap = [
     "Too long",
 ];
 
-const info = document.querySelector(".alert-info");
-
-const telInput = window.intlTelInput(telInputField, {
+const phoneInput = window.intlTelInput(phoneEl, {
     initialCountry: "sa",
+    showSelectedDialCode : true,
     utilsScript: "https://cdn.jsdelivr.net/npm/intl-tel-input@19.5.5/build/js/utils.js",
 });
 
@@ -73,41 +85,39 @@ function process(event) {
     event.preventDefault();
     loginForm.method = "POST";
     loginForm.action = "{{url}}";
-    telInputField.value = telInput.getNumber();
+    phoneEl.value = phoneInput.getNumber();
     loginForm.submit();
 }
 
 const reset = () => {
-  telInputField.classList.remove("border-danger");
+  phoneEl.classList.remove("border-danger");
   errorMsg.innerHTML = "";
   errorMsg.classList.add("hidden");
-  validMsg.classList.add("hidden");
-  btn.removeAttribute('disabled')
+  btn.disabled = false;
 };
 
 const showError = (msg) => {
-  telInputField.classList.add("border-danger");
+  phoneEl.classList.add("border-danger");
   errorMsg.innerHTML =errorMap[msg];
   errorMsg.classList.remove("hidden");
-  btn.setAttribute('disabled', true)
+  btn.disabled = true;
 };
 
-telInputField.addEventListener('keyup', () => {
+phoneEl.addEventListener('keyup', () => {
   setTimeout(() =>{
     reset();
-    if (!telInputField.value.trim()) {
+    if (!phoneEl.value.trim()) {
         showError("Required");
-    } else if (telInput.isValidNumberPrecise()) {
+    } else if (phoneInput.isValidNumberPrecise()) {
         validMsg.classList.remove("hide");
     } else {
-        const errorCode = telInput.getValidationError();
+        const errorCode = phoneInput.getValidationError();
         const msg = errorMap[errorCode] || "Invalid number";
-        console.log(msg);
         showError(msg);
     }
   }, 500);
 });
 
-telInputField.addEventListener('change', reset);
-telInputField.addEventListener('keyup', reset);
+phoneEl.addEventListener('change', reset);
+phoneEl.addEventListener('keyup', reset);
 </script>

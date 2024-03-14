@@ -61,64 +61,47 @@ class api {
         return is_enabled_auth('twilio');
     }
 
+    /**
+     * twilio otp verification
+     * @param string $tel
+     * @return \Twilio\Rest\Verify\V2\Service\VerificationInstance | \Exception
+     */
     public function verifications($tel) {
-        return $this->twilio
-            ->verify
-            ->v2
-            ->services($this->service)
-            ->verifications
-            ->create($tel, "whatsapp");
+        try {
+            return $this->twilio
+                ->verify
+                ->v2
+                ->services($this->service)
+                ->verifications
+                ->create($tel, "whatsapp", [ 'locale' => 'ar' ]);
+        } catch (\Exception $exception) {
+            redirect(new moodle_url('/auth/twilio/login.php', [ 'error' => self::removeErrorCode($exception->getMessage()) ]));
+        }
     }
 
-    public function verificationChecks($code, $tel) {
-        return $this->twilio
-            ->verify
-            ->v2
-            ->services($this->service)
-            ->verificationChecks
-            ->create([ 'code' => $code, 'to' => $tel ]);
+    public function verificationChecks($code, $phone) {
+        try {
+            return $this->twilio
+                ->verify
+                ->v2
+                ->services($this->service)
+                ->verificationChecks
+                ->create([ 'code' => $code, 'to' => $phone ]);
+        } catch (\Exception $exception) {
+            redirect(new moodle_url('/auth/twilio/otp.php', [ 'error' => self::removeErrorCode($exception->getMessage()) ]));
+        }
     }
 
     public function complete_login($data) {
         global $DB;
-        $user = new stdClass();
 
-        die(var_dump($data));
-        if (self::user_exists_phone($data['tel'])) {
-            $user = $DB->get_record('user', [ 'username' => $data['tel'] ]);
-        } else {
+        $user = new stdClass();
+        if (!$user = self::user_exists($data['username'])) {
             $user = self::create_new_confirmed_account($data);
         }
+
         complete_user_login($user, []);
         redirect(new moodle_url('/'));
-    }
-
-    /**
-     * check is user exist by phone
-     * @param string $phone
-     * @return bool
-     */
-    public static function user_exists_phone($phone) {
-        global $DB;
-        $exists = false;
-        if ($DB->record_exists_sql("SELECT id FROM {user} WHERE username LIKE '%$phone%' ")) {
-            $exists = true;
-        }
-
-        if ($DB->record_exists_sql("SELECT id FROM {user} WHERE phone1 LIKE '%$phone%' ")) {
-            $exists = true;
-        }
-
-        return $exists;
-    }
-
-    public function get_countries_choices() {
-        $countries = get_string_manager()->get_list_of_countries();
-        $choices   = [];
-        foreach ($countries as $key => $value) {
-            $choices[] = $value;
-        }
-        return $choices;
     }
 
     /**
@@ -132,14 +115,17 @@ class api {
         require_once($CFG->dirroot . '/user/profile/lib.php');
         require_once($CFG->dirroot . '/user/lib.php');
 
-        $user             = new stdClass();
-        $user->auth       = 'twilio';
-        $user->mnethostid = $CFG->mnet_localhost_id;
-        $user->secret     = random_string(15);
-        $user->password   = '';
-        $user->confirmed  = 1;  // Set the user to confirmed.
+        $user              = new stdClass();
+        $user->auth        = 'twilio';
+        $user->mnethostid  = $CFG->mnet_localhost_id;
+        $user->secret      = random_string(15);
+        $user->password    = '';
+        $user->confirmed   = 1;  // Set the user to confirmed.
+        $user->firstaccess = time();
+        $user->lastlogin   = time();
 
-        $user = self::save_user($userinfo, $user);
+        $userinfo['username'] = ltrim($userinfo['username'], '+');
+        $user                 = self::save_user($userinfo, $user);
 
         return $user;
     }
@@ -166,7 +152,15 @@ class api {
         }
 
         // Create a new user.
-        $user->id = user_create_user($user, false, true);
+        try {
+
+            $user->id = user_create_user($user, false, true);
+        } catch (\Exception $exception) {
+            redirect(new moodle_url('/auth/twilio/signup.php', [ 'phone' => $userinfo['phone'] ]), $exception->getMessage());
+        }
+
+        $user->profile['certificatename'] = $userinfo['customfields']['certificatename'];
+        $user->profile['age']             = $userinfo['customfields']['age'];
 
         // If profile fields exist then save custom profile fields data.
         if ($hasprofilefield) {
@@ -174,5 +168,26 @@ class api {
         }
 
         return $user;
+    }
+
+    public static function user_exists($username) {
+        global $DB;
+        $username = ltrim($username, '+');
+        $sql      = "SELECT * FROM {user} WHERE username LIKE '%$username%'";
+
+        return $DB->get_record_sql($sql);
+    }
+
+    /**
+     * Remove the error code form the exception message
+     * @param mixed $message
+     * @return array|string|null
+     */
+    public static function removeErrorCode($message) {
+        $pattern = "/\[\w+\]\s?/";
+
+        $cleanedMessage = preg_replace($pattern, '', $message);
+
+        return $cleanedMessage;
     }
 }

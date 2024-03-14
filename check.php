@@ -15,7 +15,7 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
- * TODO describe file login
+ * TODO describe file code_check
  *
  * @package    auth_twilio
  * @copyright  2024 Wail Abualela <wailabualela@email.com>
@@ -24,23 +24,32 @@
 
 require('../../config.php');
 
-$error = optional_param('error', '', PARAM_TEXT);
+$code  = required_param('code', PARAM_RAW);
+$phone = required_param('phone', PARAM_RAW);
 
-$PAGE->set_url(new moodle_url('/auth/twilio/login.php', []));
-$PAGE->set_pagelayout('login');
+$url = new moodle_url('/auth/twilio/check.php', []);
+
+$PAGE->set_url($url);
 $PAGE->set_context(context_system::instance());
 
-$twilio  = new \auth_twilio\api();
-$nexturl = new \moodle_url('/auth/twilio/otp.php');
+if ($code && $phone) {
 
-if (!$twilio->is_enabled()) {
-    throw new \moodle_exception('notenabled', 'auth_twilio');
+    $twilio = new \auth_twilio\api();
+
+    if (!$twilio->is_enabled())
+        throw new \moodle_exception('notenabled', 'auth_twilio');
+
+    $verification_check = $twilio->verificationChecks($code, $phone);
+
+    if ($verification_check->status == 'approved') {
+
+        \auth_twilio\api::user_exists($phone)
+            ? $twilio->complete_login([ 'username' => $phone ])
+            : redirect(new moodle_url('/auth/twilio/signup.php', [ 'phone' => $phone ]));
+
+    } else {
+        redirect(new moodle_url('/auth/twilio/otp.php', [ 'phone' => $phone, 'error' => $verification_check->status ]));
+    }
+} else {
+    redirect(new moodle_url('/auth/twilio/login.php'), get_string('accountincomplete', 'auth_twilio'));
 }
-
-
-echo $OUTPUT->header();
-echo $OUTPUT->render_from_template('auth_twilio/tel', [
-    'url'      => $nexturl,
-    'error'    => $error,
-]);
-echo $OUTPUT->footer();
