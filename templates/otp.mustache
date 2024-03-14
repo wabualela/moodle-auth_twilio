@@ -32,6 +32,11 @@
                         <h2>{{#str}} dalail, auth_twilio {{/str}}</h2>
                     </a>
                 </div>
+                 {{#error}}
+                    <div class="alert alert-danger" role="alert">
+                        {{error}}
+                    </div>
+                {{/error}}
             </div>
             <div class="rui-login-form">
                 <form id="otp-form" onsubmit="process(event)">

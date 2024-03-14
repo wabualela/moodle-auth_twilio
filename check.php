@@ -48,7 +48,7 @@ if ($code && $phone) {
             : redirect(new moodle_url('/auth/twilio/signup.php', [ 'phone' => $phone ]));
 
     } else {
-        redirect(new moodle_url('/auth/twilio/login.php', [ 'error' => $verification_check->status ]));
+        redirect(new moodle_url('/auth/twilio/otp.php', [ 'phone' => $phone, 'error' => $verification_check->status ]));
     }
 } else {
     redirect(new moodle_url('/auth/twilio/login.php'), get_string('accountincomplete', 'auth_twilio'));

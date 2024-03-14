@@ -24,9 +24,12 @@
 
 require('../../config.php');
 
-$phone   = required_param('phone', PARAM_RAW);
+$phone = required_param('phone', PARAM_RAW);
+$error = optional_param('error', '', PARAM_TEXT);
+
 $url     = new moodle_url('/auth/twilio/otp.php', [ 'phone' => $phone ]);
 $nexturl = new moodle_url('/auth/twilio/check.php', []);
+$backurl = new moodle_url('/auth/twilio/login.php');
 
 $PAGE->set_url($url);
 $PAGE->set_pagelayout('login');
@@ -38,7 +41,8 @@ if ($phone) {
     if (!$twilio->is_enabled())
         throw new \moodle_exception('notenabled', 'auth_twilio');
 
-    $verification = $twilio->verifications($phone);
+        if (!$error)
+        $verification = $twilio->verifications($phone);
 } else {
     redirect(new moodle_url('/auth/twilio/login.php', [ 'error' => get_string('phonemissing', 'auth_twilio') ]));
 }
@@ -46,12 +50,17 @@ if ($phone) {
 echo $OUTPUT->header();
 
 
-//     if ($verification->status == 'pending') {
-echo $OUTPUT->render_from_template('auth_twilio/otp', [
-    'url'   => $nexturl,
-    'phone' => $phone,
-]);
-//     }
-// } else {
+if ($verification->status == 'pending') {
+    echo $OUTPUT->render_from_template('auth_twilio/otp', [
+        'url'   => $nexturl,
+        'phone' => $phone,
+        'error' => $error,
+
+    ]);
+} else {
+    echo '<form method="post" action="' . $backurl . '">
+        <input type="hidden" name="error" value="' . $verification->status . '" />
+    </form>';
+}
 
 echo $OUTPUT->footer();

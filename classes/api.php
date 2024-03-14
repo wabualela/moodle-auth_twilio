@@ -64,7 +64,7 @@ class api {
     /**
      * twilio otp verification
      * @param string $tel
-     * @return \Twilio\Rest\Verify\V2\Service\VerificationInstance
+     * @return \Twilio\Rest\Verify\V2\Service\VerificationInstance | \Exception
      */
     public function verifications($tel) {
         try {
@@ -75,20 +75,20 @@ class api {
                 ->verifications
                 ->create($tel, "whatsapp", [ 'locale' => 'ar' ]);
         } catch (\Exception $exception) {
-            redirect(new moodle_url('/auth/twilio/login.php', [ 'error' => $exception->getMessage()]));
+            redirect(new moodle_url('/auth/twilio/login.php', [ 'error' => self::removeErrorCode($exception->getMessage()) ]));
         }
     }
 
-    public function verificationChecks($code, $tel) {
+    public function verificationChecks($code, $phone) {
         try {
             return $this->twilio
                 ->verify
                 ->v2
                 ->services($this->service)
                 ->verificationChecks
-                ->create([ 'code' => $code, 'to' => $tel ]);
+                ->create([ 'code' => $code, 'to' => $phone ]);
         } catch (\Exception $exception) {
-            redirect(new moodle_url('/auth/twilio/login.php'), get_string('notcompleted', 'auth_twilio'));
+            redirect(new moodle_url('/auth/twilio/otp.php', [ 'error' => self::removeErrorCode($exception->getMessage()) ]));
         }
     }
 
@@ -176,5 +176,18 @@ class api {
         $sql      = "SELECT * FROM {user} WHERE username LIKE '%$username%'";
 
         return $DB->get_record_sql($sql);
+    }
+
+    /**
+     * Remove the error code form the exception message
+     * @param mixed $message
+     * @return array|string|null
+     */
+    public static function removeErrorCode($message) {
+        $pattern = "/\[\w+\]\s?/";
+
+        $cleanedMessage = preg_replace($pattern, '', $message);
+
+        return $cleanedMessage;
     }
 }
