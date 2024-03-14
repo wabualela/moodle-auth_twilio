@@ -29,8 +29,7 @@ $string['pluginname'] = 'تويلو واتساب';
 $string['notenabled'] = 'آسف ، لم يتم تمكين المكون الإضافي لمصادقة تويلو (واتساب)';
 // Auth file
 $string['whatsapp'] = 'واتساب';
-
-
+$string['dalail']   = 'مركز دلائل';
 // Settings page
 $string['auth_emaildescription']      = '<p> ميزة التسجيل الذاتي المستندة إلى WhatsApp ، تمكّن المستخدمين من إنشاء حساباتهم الخاصة من خلال زر إنشاء حساب جديد بسيط في صفحة تسجيل الدخول.عند بدء العملية ، يتلقى المستخدمون على الفور رسالة WhatsApp التي تحتوي على رمز فريد ، مما يتيح لهم التحقق من حسابهم وتفعيله بسرعة.تتم إدارة محاولات تسجيل الدخول اللاحقة بسلاسة عن طريق الإشارة إلى رقم الهاتف المقدم ورمز التحقق مع البيانات المخزنة في قاعدة بيانات Moodle. </p>';
 $string['auth_accountsid']            = 'رقم الحساب';
@@ -46,9 +45,27 @@ $string['telplaceholder']         = 'أدخل رقم هاتفك';
 $string['telinvalidfeedback']     = 'الرجاء ادخال رقم جوال صحيح';
 $string['valide']                 = '✓ صالح';
 $string['notvalidtel']            = 'ليس رقم هاتف صالح';
-$string['enterotp']               = 'أدخل رمز OTP الخاص بك';
 $string['fullnameforcertificate'] = 'الاسم الكامل للشهادة';
-$string['otphelp']                = 'تم إرسال كلمة مرور مرة واحدة عبر واتساب إلى {$a}';
+$string['notcompleted']           = 'العملية غير مكتملة يرجى المحاولة مرة أخرى';
+$string['accountincomplete']      = 'إنشاء الحساب لم تكتمل';
+// fields
+$string['otp']               = 'من فضلك ادخل الرمز التعريف';
+$string['otphelp']           = 'تم إرسال الرمز التعريف اليك عبر اتساب إلى {$a}';
+$string['phone']             = 'رقم الهاتف (واتساب)';
+$string['phonehelp']         = 'صحيح الرجاء التأكد من إدخال رقم واتساب.';
+$string['phonemissing']      = 'من فضلك ادخل رقم الهاتف ';
+$string['sendcode']          = 'إرسال الرمز التعريف';
+$string['verify']            = 'اكد';
+$string['singupinstruction'] = 'يرجى ملء الحقول التالية لإنشاء حساب جديد';
+$string['certificatename']   = 'الاسم الكامل (سوف يستخدم في الشهادة)';
+$string['age']               = 'الفئة العمرية';
+
+
+
+
+
+
+
 
 
 

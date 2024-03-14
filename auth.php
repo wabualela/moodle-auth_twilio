@@ -45,7 +45,7 @@ class auth_plugin_twilio extends auth_plugin_base {
     public function loginpage_idp_list($wantsurl) {
         $result   = [];
         $result[] = [
-            'url'     => new moodle_url('/auth/twilio/login.php', [ 'wantsurl' => $wantsurl, 'sesskey' => sesskey()]),
+            'url'     => new moodle_url('/auth/twilio/login.php', []),
             'iconurl' => new moodle_url('/auth/twilio/pix/whatsapp.jpg'),
             'name'    => get_string('whatsapp', 'auth_twilio'),
         ];
