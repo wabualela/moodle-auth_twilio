@@ -22,12 +22,12 @@
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
-require('../../config.php');
+require ('../../config.php');
 
-$code  = required_param('code', PARAM_RAW);
 $phone = required_param('phone', PARAM_RAW);
+$code  = required_param('code', PARAM_RAW);
 
-$url = new moodle_url('/auth/twilio/check.php', []);
+$url = new moodle_url('/auth/twilio/check.php');
 
 $PAGE->set_url($url);
 $PAGE->set_context(context_system::instance());
@@ -48,7 +48,8 @@ if ($code && $phone) {
             : redirect(new moodle_url('/auth/twilio/signup.php', [ 'phone' => $phone ]));
 
     } else {
-        redirect(new moodle_url('/auth/twilio/otp.php', [ 'phone' => $phone, 'error' => $verification_check->status ]));
+        $SESSION->code_error_msg = get_string('invalidverificationcode', 'auth_twilio');
+        redirect(new moodle_url('/auth/twilio/otp.php', [ 'phone' => $phone ]));
     }
 } else {
     redirect(new moodle_url('/auth/twilio/login.php'), get_string('accountincomplete', 'auth_twilio'));

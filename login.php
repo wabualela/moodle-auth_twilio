@@ -22,25 +22,30 @@
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
-require('../../config.php');
+require ('../../config.php');
 
-$error = optional_param('error', '', PARAM_TEXT);
-
-$PAGE->set_url(new moodle_url('/auth/twilio/login.php', []));
+$PAGE->set_url(new moodle_url('/auth/twilio/login.php'));
 $PAGE->set_pagelayout('login');
 $PAGE->set_context(context_system::instance());
 
-$twilio  = new \auth_twilio\api();
-$nexturl = new \moodle_url('/auth/twilio/otp.php');
+$twilio = new \auth_twilio\api();
 
 if (!$twilio->is_enabled()) {
     throw new \moodle_exception('notenabled', 'auth_twilio');
 }
 
+if (isset ($SESSION->phone_error_msg)) {
+    $error = $SESSION->phone_error_msg;
+    unset($SESSION->phone_error_msg);
+} else {
+    $error = null;
+}
+
+$nexturl = new \moodle_url('/auth/twilio/otp.php');
 
 echo $OUTPUT->header();
 echo $OUTPUT->render_from_template('auth_twilio/tel', [
-    'url'      => $nexturl,
-    'error'    => $error,
+    'url'   => $nexturl,
+    'error' => $error,
 ]);
 echo $OUTPUT->footer();

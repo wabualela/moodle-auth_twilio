@@ -49,22 +49,23 @@ $string['fullnameforcertificate'] = 'Full Name for certificate';
 $string['notcompleted']      = 'operation not completed please try again';
 $string['accountincomplete'] = 'Account Creation Incomplete';
 // fields
-$string['otp']                = 'Enter your OTP code';
-$string['otphelp']            = 'One Time Password (OTP) has been sent via WhatsApp to {$a}';
-$string['phone']              = 'Phone Number (WhatsApp)';
-$string['phonehelp']          = 'Phone Number (WhatsApp)';
-$string['phonemissing']       = 'Phone Number missing';
-$string['phonetooshort']      = 'Phone number too short';
-$string['invalidnumber']      = 'Invalid phone number';
-$string['invalidcountrycode'] = 'invalid country code';
-$string['phonetoolong']       = 'Phone number too long';
-$string['sendcode']           = 'Send Code';
-$string['verify']             = 'verify';
-$string['singupinstruction']  = 'Please fill in the following fields to create a new account';
-$string['certificatename']    = 'Full Name (for certificate)';
-$string['age']                = 'Age';
-$string['resendtext']         = 'Didn\'t get the code';
-$string['resendbtn']          = 'Resend {$a}';
+$string['otp']                     = 'Enter your OTP code';
+$string['otphelp']                 = 'One Time Password (OTP) has been sent via WhatsApp to {$a}';
+$string['phone']                   = 'Phone Number (WhatsApp)';
+$string['phonehelp']               = 'Phone Number (WhatsApp)';
+$string['phonemissing']            = 'Phone Number missing';
+$string['phonetooshort']           = 'Phone number too short';
+$string['invalidnumber']           = 'Invalid phone number';
+$string['invalidcountrycode']      = 'invalid country code';
+$string['phonetoolong']            = 'Phone number too long';
+$string['sendcode']                = 'Send Code';
+$string['verify']                  = 'verify';
+$string['singupinstruction']       = 'Please fill in the following fields to create a new account';
+$string['certificatename']         = 'Full Name (for certificate)';
+$string['age']                     = 'Age';
+$string['resendtext']              = 'Didn\'t get the code';
+$string['resendbtn']               = 'Resend {$a}';
+$string['invalidverificationcode'] = 'Invalid verification code. Please try again.';
 
 
 
