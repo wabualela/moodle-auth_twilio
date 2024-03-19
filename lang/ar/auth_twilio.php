@@ -49,16 +49,24 @@ $string['fullnameforcertificate'] = 'الاسم الكامل للشهادة';
 $string['notcompleted']           = 'العملية غير مكتملة يرجى المحاولة مرة أخرى';
 $string['accountincomplete']      = 'إنشاء الحساب لم تكتمل';
 // fields
-$string['otp']               = 'من فضلك ادخل الرمز التعريف';
-$string['otphelp']           = 'تم إرسال الرمز التعريف اليك عبر اتساب إلى {$a}';
-$string['phone']             = 'رقم الهاتف (واتساب)';
-$string['phonehelp']         = 'صحيح الرجاء التأكد من إدخال رقم واتساب.';
-$string['phonemissing']      = 'من فضلك ادخل رقم الهاتف ';
-$string['sendcode']          = 'إرسال الرمز التعريف';
-$string['verify']            = 'اكد';
-$string['singupinstruction'] = 'يرجى ملء الحقول التالية لإنشاء حساب جديد';
-$string['certificatename']   = 'الاسم الكامل (سوف يستخدم في الشهادة)';
-$string['age']               = 'الفئة العمرية';
+$string['otp']                = 'من فضلك ادخل رمز التعريف';
+$string['otphelp']            = 'تم إرسال رمز التعريف اليك عبر اتساب إلى {$a}';
+$string['phone']              = 'رقم الهاتف (واتساب)';
+$string['phonehelp']          = 'صحيح الرجاء التأكد من إدخال رقم واتساب.';
+$string['phonemissing']       = 'من فضلك ادخل رقم الهاتف ';
+$string['phonetooshort']      = 'رقم الهاتف قصير جدًا';
+$string['invalidnumber']      = 'رقم الهاتف غير صحيح';
+$string['invalidcountrycode'] = 'رمز البلد غير صالح';
+$string['phonetoolong']       = 'رقم الهاتف طويل جدًا';
+$string['sendcode']           = 'إرسال رمز التعريف';
+$string['verify']             = 'اكد';
+$string['singupinstruction']  = 'يرجى ملء الحقول التالية لإنشاء حساب جديد';
+$string['certificatename']    = 'الاسم الكامل (سوف يستخدم في الشهادة)';
+$string['age']                = 'الفئة العمرية';
+
+$string['resendtext']         = 'لم تحصل على رمز التفعيل';
+$string['resendbtn']          = 'إعادة إرسال {$a}';
+
 
 
 

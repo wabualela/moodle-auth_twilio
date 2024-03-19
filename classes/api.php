@@ -75,7 +75,7 @@ class api {
                 ->verifications
                 ->create($tel, "whatsapp", [ 'locale' => 'ar' ]);
         } catch (\Exception $exception) {
-            redirect(new moodle_url('/auth/twilio/login.php', [ 'error' => self::removeErrorCode($exception->getMessage()) ]));
+            redirect(new moodle_url('/auth/twilio/login.php', [ 'error' => get_string('invalidnumber', 'auth_twilio') ]));
         }
     }
 
@@ -125,6 +125,7 @@ class api {
         $user->lastlogin    = time();
         $user->currentlogin = time();
         $user->lastip       = getremoteaddr();
+        $user->policyagreed = 0;
 
         $userinfo['username'] = ltrim($userinfo['username'], '+');
         $user                 = self::save_user($userinfo, $user);
