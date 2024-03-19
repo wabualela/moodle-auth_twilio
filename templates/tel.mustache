@@ -49,12 +49,12 @@
                 <form onsubmit="process(event)" id="login-form">
                     <div class="form-group">
                         <label for="phone">{{#str}} phone, auth_twilio {{/str}}</label>
-                        <input id="phone" name="phone" type="tel" autocomplete="tel" class="form-control" required>
+                        <input id="phone" name="phone" type="tel" autocomplete="tel" class="form-control">
+                        <small id="error-msg" class="hidden form-text text-danger"></small>
                     </div>
                     <button id="btn" type="submit"class="btn btn-lg btn-primary btn-block mt-3">
                         {{#str}} sendcode, auth_twilio {{/str}}
                     </button>
-                    <small id="error-msg" class="hidden form-text text-danger"></small>
                 </form>
             </div>
         </div>
@@ -69,10 +69,11 @@ const errorMsg      = document.querySelector("#error-msg");
 const info          = document.querySelector(".alert-info");
 
 const errorMap = [
-    "Invalid number",
-    "Invalid country code",
-    "Too short",
-    "Too long",
+    "{{#str}} invalidnumber, auth_twilio {{/str}}",
+    "{{#str}} invalidcountrycode, auth_twilio {{/str}}",
+    "{{#str}} phonetooshort, auth_twilio {{/str}}",
+    "{{#str}} phonetoolong, auth_twilio {{/str}}",
+    "{{#str}} invalidnumber, auth_twilio {{/str}}",
 ];
 
 const phoneInput = window.intlTelInput(phoneEl, {
@@ -83,10 +84,21 @@ const phoneInput = window.intlTelInput(phoneEl, {
 
 function process(event) {
     event.preventDefault();
-    loginForm.method = "POST";
-    loginForm.action = "{{url}}";
-    phoneEl.value = phoneInput.getNumber();
-    loginForm.submit();
+    reset();
+    if (!phoneEl.value.trim()) {
+        showError("{{#str}} phonemissing, auth_twilio {{/str}}");
+    } else if (phoneInput.isValidNumberPrecise()) {
+        loginForm.method = "POST";
+        loginForm.action = "{{url}}";
+        phoneEl.value = phoneInput.getNumber();
+        loginForm.submit();
+
+    } else {
+        const errorCode = phoneInput.getValidationError();
+        const msg = errorMap[errorCode]
+        || "{{#str}} invalidnumber, auth_twilio {{/str}}";
+        showError(msg);
+    }
 }
 
 const reset = () => {
@@ -98,25 +110,10 @@ const reset = () => {
 
 const showError = (msg) => {
   phoneEl.classList.add("border-danger");
-  errorMsg.innerHTML =errorMap[msg];
+  errorMsg.innerHTML = msg;
   errorMsg.classList.remove("hidden");
   btn.disabled = true;
 };
-
-phoneEl.addEventListener('keyup', () => {
-  setTimeout(() =>{
-    reset();
-    if (!phoneEl.value.trim()) {
-        showError("Required");
-    } else if (phoneInput.isValidNumberPrecise()) {
-        validMsg.classList.remove("hide");
-    } else {
-        const errorCode = phoneInput.getValidationError();
-        const msg = errorMap[errorCode] || "Invalid number";
-        showError(msg);
-    }
-  }, 500);
-});
 
 phoneEl.addEventListener('change', reset);
 phoneEl.addEventListener('keyup', reset);

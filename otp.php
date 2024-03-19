@@ -27,7 +27,7 @@ require('../../config.php');
 $phone = required_param('phone', PARAM_RAW);
 $error = optional_param('error', '', PARAM_TEXT);
 
-$url     = new moodle_url('/auth/twilio/otp.php', [ 'phone' => $phone ]);
+$url     = new moodle_url('/auth/twilio/otp.php', [ 'phone' => $phone]);
 $nexturl = new moodle_url('/auth/twilio/check.php', []);
 $backurl = new moodle_url('/auth/twilio/login.php');
 
@@ -43,6 +43,7 @@ if ($phone) {
 
         if (!$error)
         $verification = $twilio->verifications($phone);
+
 } else {
     redirect(new moodle_url('/auth/twilio/login.php', [ 'error' => get_string('phonemissing', 'auth_twilio') ]));
 }

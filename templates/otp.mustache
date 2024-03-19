@@ -39,7 +39,7 @@
                 {{/error}}
             </div>
             <div class="rui-login-form">
-                <form id="otp-form" onsubmit="process(event)">
+                <form id="otp-form" onsubmit="handleSubmit(event)">
                     <label for="code">{{#str}} otp, auth_twilio {{/str}}<span class="text-danger">*</span></label>
                     <div id="otp" class="d-flex d-flex-row justify-content-between">
                         <input id="1" style="width:3.3rem" maxlength="1" oninput="this.value=this.value.replace(/[^0-9]/g,'');" type="text" required autofocus>
@@ -49,8 +49,14 @@
                         <input id="5" style="width:3.3rem" maxlength="1" oninput="this.value=this.value.replace(/[^0-9]/g,'');" type="text" required >
                         <input id="6" style="width:3.3rem" maxlength="1" oninput="this.value=this.value.replace(/[^0-9]/g,'');" type="text" required >
                     </div>
-                    <small id="codeHelp" class="form-text text-muted">{{#str}} otphelp, auth_twilio, {{phone}} {{/str}}</small>
+                    <small id="codeHelp" class="form-text text-muted">{{#str}} otphelp, auth_twilio {{/str}} <span dir="ltr">{{phone}}</span></small>
                     <input type="submit" value="{{#str}} verify, auth_twilio {{/str}}" class="btn btn-lg btn-primary btn-block mt-3">
+                    <p class="py-3 text-center font-weight-medium">
+                        {{#str}} resendtext, auth_twilio {{/str}}
+                        <button type="button" onclick="HandleResend(this)" class="btn btn-link">
+                            {{#str}} resendbtn, auth_twilio {{/str}}
+                        </button>
+                    </p>
                 </form>
             </div>
         </div>
@@ -59,7 +65,71 @@
 
 <script>
 
-function process(event) {
+function handleInterval(element, interval){
+     if (count > 0) {
+        element.innerText = count--;
+    } else {
+        clearInterval(0); // Clear interval when countdown reaches 0
+        element.disabled = false;
+        element.innerText = "{{#str}} resendbtn, auth_twilio {{/str}}";
+        window.location.reload();
+    }
+}
+
+function HandleResend(element) {
+
+    let resend_count =  sessionStorage.getItem("resend_count");
+    console.log(resend_count);
+    if(resend_count == null) {
+        sessionStorage.setItem("resend_count", 1);
+        let count = 30;
+        element.disable = true;
+       let resendInterval = setInterval(() => {
+            if (count > 0) {
+                element.innerText = count--;
+            } else {
+                clearInterval(resendInterval); // Clear interval when countdown reaches 0
+                element.disabled = false;
+                element.innerText = "{{#str}} resendbtn, auth_twilio {{/str}}";
+                window.location.reload();
+            }
+        }, 1000)
+    } else if(resend_count == 1) {
+        sessionStorage.setItem("resend_count", 2);
+        let count = 60;
+        element.disable = true;
+        let resendInterval = setInterval(() => {
+            if (count > 0) {
+                element.innerText = count--;
+            } else {
+                clearInterval(resendInterval);
+                element.disabled = false;
+                element.innerText = "{{#str}} resendbtn, auth_twilio {{/str}}";
+                window.location.reload();
+            }
+        }, 1000)
+    } else if(resend_count == 2) {
+        sessionStorage.setItem("resend_count", 3);
+        let count = 90;
+        element.disable = true;
+        let resendInterval = setInterval(() => {
+             if (count > 0) {
+                element.innerText = count--;
+            } else {
+                clearInterval(resendInterval);
+                element.disabled = false;
+                element.innerText = "{{#str}} resendbtn, auth_twilio {{/str}}";
+                window.location.reload();
+            }
+        }, 1000)
+    } else if(resend_count > 2 ) {
+        sessionStorage.removeItem("resend_count");
+        element.hidden = true;
+    }
+
+}
+
+function handleSubmit(event) {
     event.preventDefault();
 
     let otpForm   = document.querySelector('#otp-form');
@@ -101,7 +171,6 @@ function createInput(name, type, value){
 
 function OTPInput() {
   const inputs = document.querySelectorAll('#otp > *[id]');
-  console.log(inputs);
   for (let i = 0; i < inputs.length; i++) {
     inputs[i].addEventListener('keydown', function(event) {
       if (event.key === "Backspace") {

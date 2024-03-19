@@ -29,7 +29,7 @@ $string['pluginname'] = 'Twilio WhatsApp authentication';
 $string['notenabled'] = 'Sorry, Twilio (WhatsApp) authentication plugin is not enabled';
 // Auth file
 $string['whatsapp'] = 'WhatsApp';
-$string['dalail'] = 'Dalail Center';
+$string['dalail']   = 'Dalail Center';
 // Settings page
 $string['auth_emaildescription']      = '<p>Twilio\'s WhatsApp-based self-registration feature empowers users to effortlessly establish their own accounts through a simple \'Create New Account\' button located on the login page. Upon initiating the process, users promptly receive a WhatsApp message containing a unique code, enabling them to swiftly verify and activate their account. Subsequent login attempts are seamlessly managed by cross-referencing the provided phone number and verification code with the stored data in the Moodle database.</p>';
 $string['auth_accountsid']            = 'Account SID';
@@ -49,16 +49,22 @@ $string['fullnameforcertificate'] = 'Full Name for certificate';
 $string['notcompleted']      = 'operation not completed please try again';
 $string['accountincomplete'] = 'Account Creation Incomplete';
 // fields
-$string['otp']               = 'Enter your OTP code';
-$string['otphelp']           = 'One Time Password (OTP) has been sent via WhatsApp to {$a}';
-$string['phone']             = 'Phone Number (WhatsApp)';
-$string['phonehelp']         = 'Phone Number (WhatsApp)';
-$string['phonemissing']      = 'Phone Number missing';
-$string['sendcode']          = 'Send Code';
-$string['verify']            = 'verify';
-$string['singupinstruction'] = 'Please fill in the following fields to create a new account';
-$string['certificatename']   = 'Full Name (for certificate)';
-$string['age']   = 'Age';
+$string['otp']                = 'Enter your OTP code';
+$string['otphelp']            = 'One Time Password (OTP) has been sent via WhatsApp to {$a}';
+$string['phone']              = 'Phone Number (WhatsApp)';
+$string['phonehelp']          = 'Phone Number (WhatsApp)';
+$string['phonemissing']       = 'Phone Number missing';
+$string['phonetooshort']      = 'Phone number too short';
+$string['invalidnumber']      = 'Invalid phone number';
+$string['invalidcountrycode'] = 'invalid country code';
+$string['phonetoolong']       = 'Phone number too long';
+$string['sendcode']           = 'Send Code';
+$string['verify']             = 'verify';
+$string['singupinstruction']  = 'Please fill in the following fields to create a new account';
+$string['certificatename']    = 'Full Name (for certificate)';
+$string['age']                = 'Age';
+$string['resendtext']         = 'Didn\'t get the code';
+$string['resendbtn']          = 'Resend {$a}';
 
 
 
