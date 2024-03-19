@@ -21,7 +21,7 @@ use stdClass;
 
 defined('MOODLE_INTERNAL') || die();
 
-require_once('vendor/autoload.php');
+require_once ('vendor/autoload.php');
 
 use Twilio\Rest\Client;
 
@@ -112,17 +112,19 @@ class api {
      */
     public static function create_new_confirmed_account($userinfo) {
         global $CFG, $DB;
-        require_once($CFG->dirroot . '/user/profile/lib.php');
-        require_once($CFG->dirroot . '/user/lib.php');
+        require_once ($CFG->dirroot . '/user/profile/lib.php');
+        require_once ($CFG->dirroot . '/user/lib.php');
 
-        $user              = new stdClass();
-        $user->auth        = 'twilio';
-        $user->mnethostid  = $CFG->mnet_localhost_id;
-        $user->secret      = random_string(15);
-        $user->password    = '';
-        $user->confirmed   = 1;  // Set the user to confirmed.
-        $user->firstaccess = time();
-        $user->lastlogin   = time();
+        $user               = new stdClass();
+        $user->auth         = 'twilio';
+        $user->mnethostid   = $CFG->mnet_localhost_id;
+        $user->secret       = random_string(15);
+        $user->password     = '';
+        $user->confirmed    = 1;  // Set the user to confirmed.
+        $user->firstaccess  = time();
+        $user->lastlogin    = time();
+        $user->currentlogin = time();
+        $user->lastip       = getremoteaddr();
 
         $userinfo['username'] = ltrim($userinfo['username'], '+');
         $user                 = self::save_user($userinfo, $user);
@@ -143,7 +145,7 @@ class api {
         $userfieldlist    = $userfieldmapping->get_internalfields();
         $hasprofilefield  = false;
         foreach ($userfieldlist as $field) {
-            if (isset($userinfo[ $field ]) && $userinfo[ $field ]) {
+            if (isset ($userinfo[ $field ]) && $userinfo[ $field ]) {
                 $user->$field = $userinfo[ $field ];
 
                 // Check whether the profile fields exist or not.
@@ -159,13 +161,12 @@ class api {
             redirect(new moodle_url('/auth/twilio/signup.php', [ 'phone' => $userinfo['phone'] ]), $exception->getMessage());
         }
 
-        $user->profile['certificatename'] = $userinfo['customfields']['certificatename'];
-        $user->profile['age']             = $userinfo['customfields']['age'];
+        profile_load_custom_fields($user);
 
-        // If profile fields exist then save custom profile fields data.
-        if ($hasprofilefield) {
-            profile_save_data($user);
-        }
+        $fields['certificatename'] = $userinfo['customfields']['certificatename'];
+        $fields['age']             = $userinfo['customfields']['age'];
+
+        profile_save_custom_fields($user->id, $fields);
 
         return $user;
     }
