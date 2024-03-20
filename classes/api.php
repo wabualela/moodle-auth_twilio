@@ -177,7 +177,7 @@ class api {
     public static function user_exists($username) {
         global $DB;
         $username = ltrim($username, '+');
-        $sql      = "SELECT * FROM {user} WHERE username LIKE '%$username%'";
+        $sql      = "SELECT * FROM {user} WHERE username LIKE '%$username%' AND deleted = 0";
 
         return $DB->get_record_sql($sql);
     }
