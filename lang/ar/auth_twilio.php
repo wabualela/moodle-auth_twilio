@@ -66,7 +66,7 @@ $string['age']                = 'الفئة العمرية';
 
 $string['resendtext']         = 'لم تحصل على رمز التفعيل';
 $string['resendbtn']          = 'إعادة إرسال {$a}';
-$string['invalidverificationcode'] = 'رمز التعريف غير صالح.حاول مرة اخرى.';
+$string['invalidverificationcode'] = 'رمز التعريف غير صحيح.حاول مرة اخرى.';
 
 
 
