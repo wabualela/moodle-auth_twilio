@@ -65,23 +65,11 @@
 
 <script>
 
-function handleInterval(element, interval){
-     if (count > 0) {
-        element.innerText = count--;
-    } else {
-        clearInterval(0); // Clear interval when countdown reaches 0
-        element.disabled = false;
-        element.innerText = "{{#str}} resendbtn, auth_twilio {{/str}}";
-        window.location.reload();
-    }
-}
-
 function HandleResend(element) {
 
     let resend_count =  sessionStorage.getItem("resend_count");
-    console.log(resend_count);
+
     if(resend_count == null) {
-        window.location.reload();
         sessionStorage.setItem("resend_count", 1);
         let count = 30;
         element.disable = true;
@@ -94,8 +82,8 @@ function HandleResend(element) {
                 element.innerText = "{{#str}} resendbtn, auth_twilio {{/str}}";
             }
         }, 1000)
-    } else if(resend_count == 1) {
         window.location.reload();
+    } else if(resend_count == 1) {
         sessionStorage.setItem("resend_count", 2);
         let count = 60;
         element.disable = true;
@@ -108,8 +96,8 @@ function HandleResend(element) {
                 element.innerText = "{{#str}} resendbtn, auth_twilio {{/str}}";
             }
         }, 1000)
-    } else if(resend_count == 2) {
         window.location.reload();
+    } else if(resend_count == 2) {
         sessionStorage.setItem("resend_count", 3);
         let count = 90;
         element.disable = true;
@@ -122,6 +110,7 @@ function HandleResend(element) {
                 element.innerText = "{{#str}} resendbtn, auth_twilio {{/str}}";
             }
         }, 1000)
+        window.location.reload();
     } else if(resend_count > 2 ) {
         sessionStorage.removeItem("resend_count");
         element.hidden = true;

@@ -67,6 +67,7 @@ class api {
      * @return \Twilio\Rest\Verify\V2\Service\VerificationInstance | \Exception
      */
     public function verifications($tel) {
+        global $SESSION;
         try {
             return $this->twilio
                 ->verify
@@ -75,7 +76,8 @@ class api {
                 ->verifications
                 ->create($tel, "whatsapp", [ 'locale' => 'ar' ]);
         } catch (\Exception $exception) {
-            redirect(new moodle_url('/auth/twilio/login.php', [ 'error' => get_string('invalidnumber', 'auth_twilio') ]));
+            $SESSION->phone_error_msg = get_string('invalidnumber', 'auth_twilio');
+            redirect(new moodle_url('/auth/twilio/login.php'));
         }
     }
 
@@ -88,7 +90,7 @@ class api {
                 ->verificationChecks
                 ->create([ 'code' => $code, 'to' => $phone ]);
         } catch (\Exception $exception) {
-            redirect(new moodle_url('/auth/twilio/otp.php', [ 'error' => self::removeErrorCode($exception->getMessage()) ]));
+            redirect(new moodle_url('/auth/twilio/otp.php', [ 'phone' => $phone, 'error' => get_string('invalidverificationcode', 'auth_twilio') ]));
         }
     }
 

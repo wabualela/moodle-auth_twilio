@@ -22,43 +22,58 @@
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
-require('../../config.php');
+require ('../../config.php');
 
 $phone = required_param('phone', PARAM_RAW);
-$error = optional_param('error', '', PARAM_TEXT);
 
-$url     = new moodle_url('/auth/twilio/otp.php', [ 'phone' => $phone]);
 $nexturl = new moodle_url('/auth/twilio/check.php', []);
 $backurl = new moodle_url('/auth/twilio/login.php');
 
-$PAGE->set_url($url);
+$PAGE->set_url(new moodle_url('/auth/twilio/otp.php'));
 $PAGE->set_pagelayout('login');
 $PAGE->set_context(context_system::instance());
 
-if ($phone) {
-    $twilio = new \auth_twilio\api();
-
-    if (!$twilio->is_enabled())
-        throw new \moodle_exception('notenabled', 'auth_twilio');
-
-        if (!$error)
-        $verification = $twilio->verifications($phone);
-
+if (isset ($SESSION->code_error_msg)) {
+    $error = $SESSION->code_error_msg;
+    unset($SESSION->code_error_msg);
 } else {
-    redirect(new moodle_url('/auth/twilio/login.php', [ 'error' => get_string('phonemissing', 'auth_twilio') ]));
+    $error = null;
+}
+
+if ($phone) {
+    if (!$error) { //redirect back with a error no need to send otp again
+
+        $twilio = new \auth_twilio\api();
+
+        if (!$twilio->is_enabled()) {
+            throw new \moodle_exception('notenabled', 'auth_twilio');
+        }
+        $verification = $twilio->verifications($phone);
+    }
+
+} else { // Phone number is missing rediect back with error
+    $SESSION->phone_error_msg = get_string('phonemissing', 'auth_twilio');
+    redirect(new moodle_url('/auth/twilio/login.php'));
 }
 
 echo $OUTPUT->header();
 
-
-if ($verification->status == 'pending') {
+// Display the OTP form if the otp code is send
+// or if you get redirect back with error
+if ($error) {
     echo $OUTPUT->render_from_template('auth_twilio/otp', [
         'url'   => $nexturl,
         'phone' => $phone,
         'error' => $error,
-
+    ]);
+} else if ($verification->status == 'pending') {
+    echo $OUTPUT->render_from_template('auth_twilio/otp', [
+        'url'   => $nexturl,
+        'phone' => $phone,
     ]);
 } else {
+    // Use this bag good because when using Moodle redirect
+    // it print erros because it request if GET
     echo '<form method="post" action="' . $backurl . '">
         <input type="hidden" name="error" value="' . $verification->status . '" />
     </form>';
