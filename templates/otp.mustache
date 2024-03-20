@@ -21,8 +21,24 @@
 
     Example context (json):
     {
+        "phone": "string"
     }
 }}
+<style>
+    #code {
+        padding-left: 1ch;
+        background: repeating-linear-gradient(90deg, dimgray 0, dimgray 1ch, transparent 0, transparent 1.5ch) 1ch 100%/ 9ch 2px no-repeat;
+        font: 5ch droid sans mono, consolas, monospace;
+        letter-spacing: .5ch;
+        border: 0;
+        box-shadow: none;
+        outline: none;
+        width: 10.5ch;
+        margin: 0;
+        display: block;
+        margin: 1em auto;
+    }
+</style>
 <div class="rui-login-layout rui-login-layout-simple rui-login-layout--1">
     <div class="rui-login-box">
         <div class="rui-login-content">
@@ -41,14 +57,7 @@
             <div class="rui-login-form">
                 <form id="otp-form" onsubmit="handleSubmit(event)">
                     <label for="code">{{#str}} otp, auth_twilio {{/str}}<span class="text-danger">*</span></label>
-                    <div id="otp" class="d-flex d-flex-row justify-content-between">
-                        <input id="1" style="width:3.3rem" maxlength="1" oninput="this.value=this.value.replace(/[^0-9]/g,'');" type="text" required autofocus>
-                        <input id="2" style="width:3.3rem" maxlength="1" oninput="this.value=this.value.replace(/[^0-9]/g,'');" type="text" required >
-                        <input id="3" style="width:3.3rem" maxlength="1" oninput="this.value=this.value.replace(/[^0-9]/g,'');" type="text" required >
-                        <input id="4" style="width:3.3rem" maxlength="1" oninput="this.value=this.value.replace(/[^0-9]/g,'');" type="text" required >
-                        <input id="5" style="width:3.3rem" maxlength="1" oninput="this.value=this.value.replace(/[^0-9]/g,'');" type="text" required >
-                        <input id="6" style="width:3.3rem" maxlength="1" oninput="this.value=this.value.replace(/[^0-9]/g,'');" type="text" required >
-                    </div>
+                    <input type="text" name="code" id="code" maxlength="6" dir="ltr" value="123456" required>
                     <small id="codeHelp" class="form-text text-muted">{{#str}} otphelp, auth_twilio {{/str}} <span dir="ltr">{{phone}}</span></small>
                     <input type="submit" value="{{#str}} verify, auth_twilio {{/str}}" class="btn btn-lg btn-primary btn-block mt-3">
                     <p class="py-3 text-center font-weight-medium">
@@ -64,6 +73,8 @@
 </div>
 
 <script>
+
+// -----------------------------------------
 
 function HandleResend(element) {
 
@@ -157,34 +168,5 @@ function createInput(name, type, value){
     codeInput.value = value;
     return codeInput;
 }
-
-function OTPInput() {
-  const inputs = document.querySelectorAll('#otp > *[id]');
-  for (let i = 0; i < inputs.length; i++) {
-    inputs[i].addEventListener('keydown', function(event) {
-      if (event.key === "Backspace") {
-        inputs[i].value = '';
-        if (i !== 0)
-          inputs[i - 1].focus();
-      } else {
-        if (i === inputs.length - 1 && inputs[i].value !== '') {
-          return true;
-        } else if (event.keyCode > 47 && event.keyCode < 58) {
-          inputs[i].value = event.key;
-          if (i !== inputs.length - 1)
-            inputs[i + 1].focus();
-          event.preventDefault();
-        } else if (event.keyCode > 64 && event.keyCode < 91) {
-          inputs[i].value = String.fromCharCode(event.keyCode);
-          if (i !== inputs.length - 1)
-            inputs[i + 1].focus();
-          event.preventDefault();
-        }
-      }
-    });
-  }
-}
-
-OTPInput();
 
 </script>
