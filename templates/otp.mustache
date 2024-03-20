@@ -57,7 +57,7 @@
             <div class="rui-login-form">
                 <form id="otp-form" onsubmit="handleSubmit(event)">
                     <label for="code">{{#str}} otp, auth_twilio {{/str}}<span class="text-danger">*</span></label>
-                    <input type="text" name="code" id="code" maxlength="6" dir="ltr" value="123456" required>
+                    <input type="text" name="code" id="code" maxlength="6" dir="ltr" placeholder="000000" required>
                     <small id="codeHelp" class="form-text text-muted">{{#str}} otphelp, auth_twilio {{/str}} <span dir="ltr">{{phone}}</span></small>
                     <input type="submit" value="{{#str}} verify, auth_twilio {{/str}}" class="btn btn-lg btn-primary btn-block mt-3">
                     <p class="py-3 text-center font-weight-medium">
@@ -73,9 +73,6 @@
 </div>
 
 <script>
-
-// -----------------------------------------
-
 function HandleResend(element) {
 
     let resend_count =  sessionStorage.getItem("resend_count");
@@ -133,28 +130,14 @@ function handleSubmit(event) {
     event.preventDefault();
 
     let otpForm   = document.querySelector('#otp-form');
-    let digit1    = document.getElementById('1').value;
-    let digit2    = document.getElementById('2').value;
-    let digit3    = document.getElementById('3').value;
-    let digit4    = document.getElementById('4').value;
-    let digit5    = document.getElementById('5').value;
-    let digit6    = document.getElementById('6').value;
-    let code      = digit1 + digit2 + digit3 + digit4 + digit5 + digit6;
+    let code      = document.querySelector('#code');
 
-    let codeInput      = createInput(
-        'code',
-        'hidden',
-        code
-    );
-
-     let phoneInput   = createInput(
+    otpForm.appendChild(
+        createInput(
         'phone',
         'hidden',
-        '{{phone}}'
+        '{{phone}}')
     );
-
-    otpForm.appendChild(codeInput);
-    otpForm.appendChild(phoneInput);
     otpForm.method = "POST";
     otpForm.action = "{{url}}";
 
