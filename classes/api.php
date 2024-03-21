@@ -76,7 +76,11 @@ class api {
                 ->verifications
                 ->create($tel, "whatsapp", [ 'locale' => 'ar' ]);
         } catch (\Exception $exception) {
-            $SESSION->phone_error_msg = get_string('invalidnumber', 'auth_twilio');
+            if(strpos($exception->getMessage(), "HTTP 401") !== false) {
+                $SESSION->phone_error_msg = get_string('http401', 'auth_twilio');
+            }else {
+                $SESSION->phone_error_msg = get_string('invalidnumber', 'auth_twilio');
+            }
             redirect(new moodle_url('/auth/twilio/login.php'));
         }
     }

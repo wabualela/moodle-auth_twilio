@@ -66,6 +66,7 @@ $string['age']                     = 'Age';
 $string['resendtext']              = 'Didn\'t get the code';
 $string['resendbtn']               = 'Resend {$a}';
 $string['invalidverificationcode'] = 'Invalid verification code. Please try again.';
+$string['http401'] = 'Authenticate: Unable to create record';
 
 
 
