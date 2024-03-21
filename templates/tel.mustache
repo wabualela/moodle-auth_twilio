@@ -87,7 +87,7 @@ function handleSubmit(event) {
     event.preventDefault();
     reset();
     if (!phoneEl.value.trim()) {
-        showError("{{#str}} phonemissing, auth_twilio {{/str}}");
+        showError("{{#str}} missingphone, auth_twilio {{/str}}");
     } else if (phoneInput.isValidNumberPrecise()) {
         loginForm.method = "POST";
         loginForm.action = "{{url}}";

@@ -22,18 +22,16 @@
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
-require('../../config.php');
+require ('../../config.php');
 
-$firstname       = required_param('firstname', PARAM_RAW);
+$firstname       = required_param('phone', PARAM_RAW);
 $lastname        = required_param('lastname', PARAM_RAW);
 $email           = required_param('email', PARAM_RAW);
 $phone           = required_param('phone', PARAM_RAW);
 $certificatename = required_param('certificatename', PARAM_RAW);
 $age             = required_param('age', PARAM_RAW);
 
-$url = new moodle_url('/auth/twilio/save.php', []);
-
-$PAGE->set_url($url);
+$PAGE->set_url(new moodle_url('/auth/twilio/save.php', []));
 $PAGE->set_context(context_system::instance());
 
 $twilio = new \auth_twilio\api();

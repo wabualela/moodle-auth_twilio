@@ -22,9 +22,14 @@
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
-require('../../config.php');
+require ('../../config.php');
 
-$phone = required_param('phone', PARAM_RAW);
+$phone = optional_param('phone', '', PARAM_RAW);
+
+if (empty ($phone)) {
+    $SESSION->phone_error_msg = get_string('missingphone', 'auth_twilio');
+    redirect(new moodle_url('/auth/twilio/login.php'));
+}
 
 $url     = new moodle_url('/auth/twilio/signup.php', [ 'phone' => $phone ]);
 $nexturl = new moodle_url('/auth/twilio/save.php', []);
@@ -35,7 +40,7 @@ $PAGE->set_context(context_system::instance());
 
 echo $OUTPUT->header();
 echo $OUTPUT->render_from_template('auth_twilio/signup', [ 
-    'url'     => $nexturl,
-    'phone'   => $phone,
+    'url'   => $nexturl,
+    'phone' => $phone,
 ]);
 echo $OUTPUT->footer();

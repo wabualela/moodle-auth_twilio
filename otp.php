@@ -24,9 +24,14 @@
 
 require ('../../config.php');
 
-$phone = required_param('phone', PARAM_RAW);
+$phone = optional_param('phone', '', PARAM_RAW);
 
-$nexturl = new moodle_url('/auth/twilio/check.php', []);
+if (empty ($phone)) {
+    $SESSION->phone_error_msg = get_string('missingphone', 'auth_twilio');
+    redirect(new moodle_url('/auth/twilio/login.php'));
+}
+
+$nexturl = new moodle_url('/auth/twilio/check.php');
 $backurl = new moodle_url('/auth/twilio/login.php');
 
 $PAGE->set_url(new moodle_url('/auth/twilio/otp.php'));
@@ -40,20 +45,14 @@ if (isset ($SESSION->code_error_msg)) {
     $error = null;
 }
 
-if ($phone) {
-    if (!$error) { //redirect back with a error no need to send otp again
+if (!$error) { //redirect back with a error no need to send otp again
 
-        $twilio = new \auth_twilio\api();
+    $twilio = new \auth_twilio\api();
 
-        if (!$twilio->is_enabled()) {
-            throw new \moodle_exception('notenabled', 'auth_twilio');
-        }
-        $verification = $twilio->verifications($phone);
+    if (!$twilio->is_enabled()) {
+        throw new \moodle_exception('notenabled', 'auth_twilio');
     }
-
-} else { // Phone number is missing rediect back with error
-    $SESSION->phone_error_msg = get_string('phonemissing', 'auth_twilio');
-    redirect(new moodle_url('/auth/twilio/login.php'));
+    $verification = $twilio->verifications($phone);
 }
 
 echo $OUTPUT->header();
