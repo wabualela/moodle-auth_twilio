@@ -34,23 +34,27 @@
                 </div>
             </div>
             <div class="rui-login-form">
-                <form id="signup-form" method="POST" action="{{url}}">
+                <form method="POST" action="{{url}}" class="needs-validation" novalidate>
                 <p>{{#str}} singupinstruction, auth_twilio {{/str}}</p>
                     <div class="form-group">
                         <label for="firstname">{{#str}} firstname {{/str}}<span class="text-danger">*</span></label>
                         <input type="text" name="firstname" id="firstname" class="form-control" required>
+                        <small class="invalid-feedback">{{#str}} missingfirstname {{/str}}</small>
                     </div>
                     <div class="form-group">
                         <label for="lastname">{{#str}} lastname {{/str}}<span class="text-danger">*</span></label>
                         <input type="text" name="lastname" id="lastname" class="form-control" required>
+                        <small class="invalid-feedback">{{#str}} missinglastname {{/str}}</small>
                     </div>
                     <div class="form-group">
                         <label for="email">{{#str}} email {{/str}}<span class="text-danger">*</span></label>
                         <input type="email" name="email" id="email" class="form-control" required>
+                        <small class="invalid-feedback">{{#str}} missingemail {{/str}}</small>
                     </div>
                      <div class="form-group">
                         <label for="certificatename">{{#str}} certificatename, auth_twilio {{/str}}<span class="text-danger">*</span></label>
                         <input type="text" name="certificatename" id="certificatename" class="form-control" required>
+                        <small class="invalid-feedback">{{#str}} missingcertificatename, auth_twilio {{/str}}</small>
                     </div>
                         <div class="col-form-label col-md-3 mb-sm-1 mb-md-0 pl-0">
                             <label class="d-block" for="id_age">
@@ -71,3 +75,25 @@
         </div>
     </div>
 </div>
+
+
+<script>
+(function() {
+  'use strict';
+  window.addEventListener('load', function() {
+    // Fetch all the forms we want to apply custom Bootstrap validation styles to
+    var forms = document.getElementsByClassName('needs-validation');
+    // Loop over them and prevent submission
+    var validation = Array.prototype.filter.call(forms, function(form) {
+      form.addEventListener('submit', function(event) {
+        if (form.checkValidity() === false) {
+          event.preventDefault();
+          event.stopPropagation();
+        }
+        form.classList.add('was-validated');
+      }, false);
+    });
+  }, false);
+})();
+
+</script>

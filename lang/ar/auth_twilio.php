@@ -68,13 +68,5 @@ $string['resendtext']         = 'لم تحصل على رمز التفعيل';
 $string['resendbtn']          = 'إعادة إرسال {$a}';
 $string['invalidverificationcode'] = 'رمز التعريف غير صحيح.حاول مرة اخرى.';
 $string['http401'] = 'المصادقة: غير قادر على إنشاء سجل';
-
-
-
-
-
-
-
-
-
-
+// Validations
+$string['missingcertificatename'] = 'اسم الشهادة مفقود';

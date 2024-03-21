@@ -57,6 +57,7 @@ if ($phone) {
 }
 
 echo $OUTPUT->header();
+echo $PAGE->requires->js(new moodle_url("$CGF->wwwroot/auth/twilio/js"));
 
 // Display the OTP form if the otp code is send
 // or if you get redirect back with error
@@ -66,8 +67,7 @@ if ($error) {
         'phone' => $phone,
         'error' => $error,
     ]);
-}
- else if ($verification->status == 'pending') {
+} else if ($verification->status == 'pending') {
     echo $OUTPUT->render_from_template('auth_twilio/otp', [
         'url'   => $nexturl,
         'phone' => $phone,
