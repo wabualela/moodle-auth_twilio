@@ -57,3 +57,85 @@
         </div>
     </div>
 </div>
+<script>
+
+//  OTP
+function HandleResend(element) {
+
+    let resend_count = sessionStorage.getItem("resend_count");
+
+    if (resend_count == null) {
+        sessionStorage.setItem("resend_count", 1);
+        let count = 30;
+        element.disable = true;
+        let resendInterval = setInterval(() => {
+            if (count > 0) {
+                element.innerText = count--;
+            } else {
+                clearInterval(resendInterval); // Clear interval when countdown reaches 0
+                element.disabled = false;
+                element.innerText = "{{#str}} resendbtn, auth_twilio {{/str}}";
+            }
+        }, 1000)
+        window.location.reload();
+    } else if (resend_count == 1) {
+        sessionStorage.setItem("resend_count", 2);
+        let count = 60;
+        element.disable = true;
+        let resendInterval = setInterval(() => {
+            if (count > 0) {
+                element.innerText = count--;
+            } else {
+                clearInterval(resendInterval);
+                element.disabled = false;
+                element.innerText = "{{#str}} resendbtn, auth_twilio {{/str}}";
+            }
+        }, 1000)
+        window.location.reload();
+    } else if (resend_count == 2) {
+        sessionStorage.setItem("resend_count", 3);
+        let count = 90;
+        element.disable = true;
+        let resendInterval = setInterval(() => {
+            if (count > 0) {
+                element.innerText = count--;
+            } else {
+                clearInterval(resendInterval);
+                element.disabled = false;
+                element.innerText = "{{#str}} resendbtn, auth_twilio {{/str}}";
+            }
+        }, 1000)
+        window.location.reload();
+    } else if (resend_count > 2) {
+        sessionStorage.removeItem("resend_count");
+        element.hidden = true;
+    }
+
+}
+
+function handleSubmit(event) {
+    event.preventDefault();
+
+    let otpForm = document.querySelector('#otp-form');
+    let code = document.querySelector('#code');
+
+    otpForm.appendChild(
+        createInput(
+            'phone',
+            'hidden',
+            '{{phone}}')
+    );
+    otpForm.method = "POST";
+    otpForm.action = "{{url}}";
+
+    otpForm.submit();
+}
+
+function createInput(name, type, value) {
+    let codeInput = document.createElement('input');
+    codeInput.type = type || 'text';
+    codeInput.name = name;
+    codeInput.value = value;
+    return codeInput;
+}
+</script>
