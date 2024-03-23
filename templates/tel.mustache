@@ -26,12 +26,6 @@
     }
 }}
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/intl-tel-input@19.5.6/build/css/intlTelInput.css">
-<style>
-.iti {
-  position: relative;
-  display: block !important;
-}
-</style>
 <div class="rui-login-layout rui-login-layout-simple rui-login-layout--1">
     <div class="rui-login-box">
         <div class="rui-login-content">
@@ -54,9 +48,10 @@
                         <input id="phone" name="phone" type="tel" autocomplete="tel" class="form-control">
                         <small id="error-msg" class="hidden form-text text-danger"></small>
                     </div>
-                    <button id="btn" type="submit"class="btn btn-lg btn-primary btn-block mt-3">
+                    <button id="btn" type="submit"class="btn btn-lg btn-primary btn-block my-3">
                         {{#str}} sendcode, auth_twilio {{/str}}
                     </button>
+                    <a href="/login" class="btn btn-lg btn-secondary btn-block m-0">{{#str}} cancel {{/str}}</a>
                 </form>
             </div>
         </div>
@@ -64,10 +59,15 @@
 </div>
 <script src="https://cdn.jsdelivr.net/npm/intl-tel-input@19.5.5/build/js/intlTelInput.min.js"></script>
 <script>
-const loginForm     = document.querySelector('#login-form');
-const phoneEl       = document.querySelector("#phone");
-const btn           = document.querySelector("#btn");
-const errorMsg      = document.querySelector("#error-msg");
+</script>
+
+<script>
+
+// TEL
+const loginForm = document.querySelector('#login-form');
+const phoneEl = document.querySelector("#phone");
+const btn = document.querySelector("#btn");
+const errorMsg = document.querySelector("#error-msg");
 
 const errorMap = [
     "{{#str}} invalidnumber, auth_twilio {{/str}}",
@@ -79,7 +79,7 @@ const errorMap = [
 
 const phoneInput = window.intlTelInput(phoneEl, {
     initialCountry: "sa",
-    showSelectedDialCode : true,
+    showSelectedDialCode: true,
     utilsScript: "https://cdn.jsdelivr.net/npm/intl-tel-input@19.5.5/build/js/utils.js",
 });
 
@@ -93,29 +93,29 @@ function handleSubmit(event) {
         loginForm.action = "{{url}}";
         phoneEl.value = phoneInput.getNumber();
         loginForm.submit();
-
     } else {
         const errorCode = phoneInput.getValidationError();
-        const msg = errorMap[errorCode]
-        || "{{#str}} invalidnumber, auth_twilio {{/str}}";
+        const msg = errorMap[ errorCode ]
+            || "{{#str}} invalidnumber, auth_twilio {{/str}}";
         showError(msg);
     }
 }
 
 const reset = () => {
-  phoneEl.classList.remove("border-danger");
-  errorMsg.innerHTML = "";
-  errorMsg.classList.add("hidden");
-  btn.disabled = false;
+    phoneEl.classList.remove("is-invalid");
+    errorMsg.innerHTML = "";
+    errorMsg.classList.add("hidden");
+    btn.disabled = false;
 };
 
 const showError = (msg) => {
-  phoneEl.classList.add("border-danger");
-  errorMsg.innerHTML = msg;
-  errorMsg.classList.remove("hidden");
-  btn.disabled = true;
+    phoneEl.classList.add("is-invalid");
+    errorMsg.innerHTML = msg;
+    errorMsg.classList.remove("hidden");
+    btn.disabled = true;
 };
 
 phoneEl.addEventListener('change', reset);
 phoneEl.addEventListener('keyup', reset);
+
 </script>
