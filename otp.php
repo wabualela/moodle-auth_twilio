@@ -56,7 +56,6 @@ if (!$error) { //redirect back with a error no need to send otp again
 }
 
 echo $OUTPUT->header();
-echo $PAGE->requires->js(new moodle_url("$CGF->wwwroot/auth/twilio/js"));
 
 // Display the OTP form if the otp code is send
 // or if you get redirect back with error
